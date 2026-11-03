@@ -1,0 +1,36 @@
+{
+    "name": "Vanilla Java Development Environment",
+    "image": "mcr.microsoft.com/devcontainers/java:1-21-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/java:1.8.3": {
+            "version": "none",
+            "installMaven": "true",
+            "installGradle": "false"
+        },
+        "ghcr.io/devcontainers/features/node:2.1.1": {
+            "version": "lts"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "files.encoding": "utf8",
+                "java.server.launchMode": "Standard",
+                "java.configuration.updateBuildConfiguration": "automatic",
+                "java.jdt.ls.java.home": "/usr/lib/jvm/msopenjdk-current",
+                "editor.codeActionsOnSave": {
+                    "source.fixAll.markdownlint": "explicit"
+                }
+            },
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "MS-CEINTL.vscode-language-pack-ja",
+                "davidanson.vscode-markdownlint",
+                "mermaidchart.vscode-mermaid-chart",
+                "anthropic.claude-code"
+            ]
+        }
+    },
+    "postCreateCommand": "npm install -g markdownlint-cli2 textlint textlint-rule-preset-ja-technical-writing textlint-rule-prh",
+    "remoteUser": "vscode"
+}
