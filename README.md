@@ -1,4 +1,4 @@
-# starter-design-pattern
+# starter-design-and-architecture-patterns
 
 デザインパターンとアーキテクチャパターンの「考え方」を学ぶJava実践教材です。同じ業務ロジックを異なるパターンへ分解し直し、実装の違いを比べます。
 
