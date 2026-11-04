@@ -13,14 +13,18 @@ import org.junit.jupiter.api.Test;
  * </pre>
  */
 class EcbStructureTest {
+    // ROOTを持つフィールド
     private static final String ROOT = "ch05_ecb/exercise/";
 
     /** boundary・control・entity の3つのパッケージがある。 */
     @Test
     @DisplayName("boundary・control・entity の3つのパッケージがある")
     void threeRolesExist() {
+        // boundary パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "boundary");
+        // control パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "control");
+        // entity パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "entity");
     }
 
@@ -30,6 +34,7 @@ class EcbStructureTest {
     void boundaryTalksOnlyToControl() {
         // ★重要★ Boundary は Control を呼ぶ。Entity は直接使わない（必要な値は Control が詰め直して返す）
         SourceRules.assertSomeFileImports(ROOT + "boundary", ".exercise.control.");
+        // ★重要★ boundary が「.exercise.entity.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertNoImport(ROOT + "boundary", ".exercise.entity.");
     }
 
@@ -39,6 +44,7 @@ class EcbStructureTest {
     void controlKnowsEntityNotBoundary() {
         // ★重要★ Control は Entity を使う。外との接点（Boundary）の都合は知らない
         SourceRules.assertSomeFileImports(ROOT + "control", ".exercise.entity.");
+        // ★重要★ control が「.exercise.boundary.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertNoImport(ROOT + "control", ".exercise.boundary.");
     }
 
@@ -46,7 +52,9 @@ class EcbStructureTest {
     @Test
     @DisplayName("entity は、control も boundary も知らない")
     void entityKnowsNoOtherRole() {
+        // ★重要★ entity が「.exercise.control.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "entity", ".exercise.control.");
+        // ★重要★ entity が「.exercise.boundary.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "entity", ".exercise.boundary.");
     }
 
@@ -56,7 +64,9 @@ class EcbStructureTest {
     void boundaryHasNoRulesAndNoState() {
         // ★重要★ ルール（決済上限など）と状態（Map など）は、Entity が持つ
         SourceRules.assertPackageExists(ROOT + "boundary");
+        // ★重要★ このパッケージに置いてはいけないものを含まないことを確かめる（決済上限は業務ルールです。entity に置きます）
         SourceRules.assertNoTextInPackage(ROOT + "boundary", "500000", "決済上限は業務ルールです。entity に置きます");
+        // ★重要★ このパッケージに置いてはいけないものを含まないことを確かめる（状態の保持は entity の役割です）
         SourceRules.assertNoTextInPackage(ROOT + "boundary", "HashMap", "状態の保持は entity の役割です");
     }
 }

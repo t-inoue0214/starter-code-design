@@ -62,6 +62,28 @@ flowchart LR
 
 土台のクラスは、`List<OrderFollowUp>` を持ち、決済のあとに順に呼ぶだけです。何を入れるかは、組み立てる側が決めます。
 
+### 「SMSだけ」を作るとき
+
+要件が「SMSだけ送る処理」に変わったとき、継承とコンポジションでは、作るものが変わります。
+
+```mermaid
+flowchart LR
+    subgraph INH["継承: 組み合わせごとに連鎖が要る"]
+        direction TB
+        B["Base"] -->|"継承して追加"| M["Mail"]
+        M --> MS["MailSms"]
+        MS --> AMS["AuditedMailSms"]
+        B -.-> X["SMSだけ: 連鎖の途中を抜けない<br/>新しい子クラスの連鎖が必要"]
+    end
+    subgraph COM["コンポジション: 部品を並べ替えるだけ"]
+        direction TB
+        A["標準の処理"] --> A1["Mail"]
+        A --> A2["Sms"]
+        A --> A3["Audit"]
+        S["SMSだけの処理"] --> A2
+    end
+```
+
 ### 継承とコンポジションの比べ方
 
 | 観点 | 継承 | コンポジション |

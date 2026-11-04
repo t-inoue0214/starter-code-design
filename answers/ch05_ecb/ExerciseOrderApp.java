@@ -13,6 +13,7 @@ import java.util.Map;
  * 第5章の解答例です。部品を組み立てる役（コンポジションルート）だけが残っています。
  */
 public class ExerciseOrderApp implements OrderApp {
+    // boundaryを持つフィールド
     private final OrderApp boundary;
 
     /**
@@ -25,6 +26,7 @@ public class ExerciseOrderApp implements OrderApp {
     public ExerciseOrderApp(Map<String, Integer> stock, PrintStream out, LocalDate today) {
         // ★重要★ 依存される側（Entity）から順に作り、使う側に渡す
         OrderControl control = new OrderControl(new Stock(stock), new OrderBook());
+        // ★重要★ 外との接点には、処理の流れ（Control）だけを渡す（Entity は渡さない）
         this.boundary = new ConsoleOrderBoundary(control, out, today);
     }
 
@@ -36,6 +38,7 @@ public class ExerciseOrderApp implements OrderApp {
      */
     @Override
     public String handle(String commandLine) {
+        // 外との接点（Boundary）に処理を任せ、その応答を返す
         return boundary.handle(commandLine);
     }
 }

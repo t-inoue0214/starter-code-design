@@ -86,6 +86,26 @@ flowchart LR
 
 読み取りモデルを別のデータベースに持つ本格的な構成では、更新から反映までに遅れが生じます。この遅れを許容する性質を「結果整合性」と呼びます。「注文した直後に参照しても、一覧に出ない」ことが起こり得ます。画面の作り方やユーザーへの説明が必要になります。この章の解答例は、同じプロセスの中で即時に反映するため、遅れは起きません。
 
+反映が遅れる構成では、次の順で「見つからない」状況が起こります。
+
+```mermaid
+sequenceDiagram
+    actor U as 利用者
+    participant W as 更新側
+    participant M as 読み取りモデル
+    participant Q as 参照側
+    U->>W: PLACE コマンド
+    W-->>U: OK 注文ID total=請求額
+    Note over W,M: 反映が遅れている間
+    U->>Q: SHOW 注文ID
+    Q->>M: summary(注文ID)
+    M-->>Q: 見つからない
+    Q-->>U: ERROR 注文が見つかりません
+    W->>M: apply(...)（遅れて反映）
+    U->>Q: SHOW 注文ID
+    Q-->>U: ORDER 注文ID customer=顧客ID total=請求額
+```
+
 ### 適用すると嬉しい状況・損をする状況
 
 | 観点 | 内容 |
@@ -161,6 +181,30 @@ mvn test
 | `command` | `PlaceOrderHandler`、`PlacedOrder` | 注文の受け付け。在庫と注文IDだけを持つ |
 | `query` | `OrderReadModel`、`OrderQueryHandler`、`OrderSummary` | 参照専用のデータと、その検索 |
 | ルート | `ExerciseOrderApp` | 振り分けと、更新後の反映 |
+
+### 更新と参照の流れ（シーケンス図）
+
+更新側（`PlaceOrderHandler`）は参照側を知りません。参照側の更新は、組み立て役（`ExerciseOrderApp`）がつないでいます。
+
+```mermaid
+sequenceDiagram
+    actor U as 利用者
+    participant A as ExerciseOrderApp
+    participant H as PlaceOrderHandler（更新側）
+    participant M as OrderReadModel（参照側）
+    participant Q as OrderQueryHandler（参照側）
+    U->>A: PLACE コマンド
+    A->>H: place(order)
+    H-->>A: PlacedOrder
+    A->>M: apply(注文ID, 顧客ID, 請求額)
+    A-->>U: OK 注文ID total=請求額
+    U->>A: SHOW コマンド
+    A->>Q: show(注文ID)
+    Q->>M: summary(注文ID)
+    M-->>Q: OrderSummary
+    Q-->>A: OrderSummary
+    A-->>U: ORDER 注文ID customer=顧客ID total=請求額
+```
 
 ### 組み立て役（更新後の反映）
 

@@ -14,6 +14,7 @@ public class CouponRuleFactory {
      * @return 割引ルール
      */
     public CouponRule create(String code) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第15章の課題です");
     }
 }

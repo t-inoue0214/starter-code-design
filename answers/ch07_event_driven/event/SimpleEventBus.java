@@ -10,6 +10,7 @@ import java.util.function.Consumer;
  * 同じプロセスの中で、同期的にイベントを配るバスです。
  */
 public class SimpleEventBus implements EventBus {
+    // イベントの受け取り手の表を持つフィールド
     private final Map<Class<?>, List<Consumer<Object>>> handlers = new HashMap<>();
 
     /**
@@ -33,6 +34,7 @@ public class SimpleEventBus implements EventBus {
     public void publish(Object event) {
         // ★重要★ 登録順に呼ぶ。誰が登録されているかは、出す側は知らない
         for (Consumer<Object> handler : handlers.getOrDefault(event.getClass(), List.of())) {
+            // 受け取り手に、イベントを渡して処理させる
             handler.accept(event);
         }
     }

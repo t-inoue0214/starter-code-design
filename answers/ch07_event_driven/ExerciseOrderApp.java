@@ -27,8 +27,11 @@ import java.util.List;
  * 第7章の解答例です。イベントバスを介して、出す側と受け取る側を組み立てます。
  */
 public class ExerciseOrderApp implements OrderApp {
+    // 更新側を持つフィールド
     private final PlaceOrderHandler commands;
+    // 参照側を持つフィールド
     private final OrderQueryHandler queries;
+    // 今日の日付を持つフィールド
     private final LocalDate today;
 
     /**
@@ -39,6 +42,7 @@ public class ExerciseOrderApp implements OrderApp {
      * @param today 今日の日付
      */
     public ExerciseOrderApp(Map<String, Integer> stock, PrintStream out, LocalDate today) {
+        // 標準のバスを使って、もう一方のコンストラクタを呼ぶ
         this(stock, out, today, new SimpleEventBus());
     }
 
@@ -51,12 +55,17 @@ public class ExerciseOrderApp implements OrderApp {
      * @param bus   イベントバス
      */
     public ExerciseOrderApp(Map<String, Integer> stock, PrintStream out, LocalDate today, EventBus bus) {
+        // 参照用の読み取りモデルを作る
         OrderReadModel readModel = new OrderReadModel();
+        // 読み取りモデルを使う参照側を作って、保存する
         this.queries = new OrderQueryHandler(readModel);
         // ★重要★ 受け取る側を、バスに登録する（出す側は、これらを知らない）
         new NotificationSubscriber(out).register(bus);
+        // ★重要★ 参照データを更新する受け取り手を、バスに登録する
         new ReadModelSubscriber(readModel).register(bus);
+        // ★重要★ 出す側にはバスだけを渡す（受け取り手を渡さない）
         this.commands = new PlaceOrderHandler(stock, bus);
+        // 引数の今日の日付を、フィールドに保存する
         this.today = today;
     }
 
@@ -70,20 +79,32 @@ public class ExerciseOrderApp implements OrderApp {
     public String handle(String commandLine) {
         // 空白で区切って、コマンド名と引数に分ける
         String[] parts = commandLine.trim().split("\\s+");
+        // 例外が起こりうる処理を、ここから試す
         try {
             // 最初の語がコマンド名。コマンドごとの処理へ振り分ける
             switch (parts[0]) {
+                // PLACE コマンドのとき
                 case "PLACE":
+                    // PLACE の処理を呼び、その応答を返す
                     return place(parts);
+                // SHOW コマンドのとき
                 case "SHOW":
+                    // 語の数が2つであることを確かめる
                     requireArgs(parts, 2);
+                    // SHOW の処理を呼び、その応答を返す
                     return show(parts[1]);
+                // HISTORY コマンドのとき
                 case "HISTORY":
+                    // 語の数が2つであることを確かめる
                     requireArgs(parts, 2);
+                    // HISTORY の処理を呼び、その応答を返す
                     return history(parts[1]);
+                // どのコマンドにも当てはまらないとき
                 default:
+                    // 未知のコマンドを、検証エラーとして投げる
                     throw new OrderValidationException("不明なコマンドです: " + parts[0]);
             }
+        // 業務上の失敗（検証エラー、在庫不足、決済拒否）が起きたとき
         } catch (OrderValidationException | OutOfStockException | PaymentDeclinedException e) {
             // ★重要★ 業務上の失敗は、例外ではなく ERROR 応答として返す
             return "ERROR " + e.getMessage();
@@ -99,6 +120,7 @@ public class ExerciseOrderApp implements OrderApp {
     private void requireArgs(String[] parts, int expected) {
         // 引数の数が違うコマンドは、形式の誤りとして扱う
         if (parts.length != expected) {
+            // 形式の誤りを、検証エラーとして投げる
             throw new OrderValidationException("形式が不正です");
         }
     }
@@ -112,6 +134,7 @@ public class ExerciseOrderApp implements OrderApp {
     private String place(String[] parts) {
         // ★重要★ イベントを出すのは更新側。通知や参照データの更新は、バスに登録された受け取り手が行う
         OrderResult result = commands.place(parsePlace(parts));
+        // 成功の応答として、注文IDと請求額を返す
         return "OK " + result.orderId() + " total=" + result.total();
     }
 
@@ -122,7 +145,9 @@ public class ExerciseOrderApp implements OrderApp {
      * @return 応答の文字列
      */
     private String show(String orderId) {
+        // 参照側から、注文の概要を取り出す
         OrderSummary s = queries.show(orderId);
+        // 注文の概要を、ORDER 応答の文字列にして返す
         return "ORDER " + s.orderId() + " customer=" + s.customerId() + " total=" + s.total();
     }
 
@@ -133,6 +158,7 @@ public class ExerciseOrderApp implements OrderApp {
      * @return 応答の文字列
      */
     private String history(String customerId) {
+        // 参照側から、顧客の注文ID一覧を取り出す
         List<String> ids = queries.history(customerId);
         // 履歴が空なら (none) と表示する
         return "HISTORY " + customerId + " " + (ids.isEmpty() ? "(none)" : String.join(",", ids));
@@ -142,25 +168,38 @@ public class ExerciseOrderApp implements OrderApp {
     private Order parsePlace(String[] parts) {
         // 形式の確認（項目数）
         if (parts.length != 5) {
+            // 形式の誤りを、検証エラーとして投げる
             throw new OrderValidationException("形式が不正です");
         }
         // 会員ランクの解釈
         MemberRank rank;
+        // 例外が起こりうる処理を、ここから試す
         try {
+            // 会員ランクの文字列を、列挙型に直す
             rank = MemberRank.valueOf(parts[3]);
+        // 列挙型に直せなかったとき
         } catch (IllegalArgumentException e) {
+            // 形式の誤りを、検証エラーとして投げる
             throw new OrderValidationException("形式が不正です");
         }
         // 明細の解釈（商品ID:単価:数量 を ; でつないだもの）
         List<OrderLine> lines = new ArrayList<>();
+        // 明細の文字列を、; で1件ずつに分けて処理する
         for (String text : parts[4].split(";")) {
+            // 明細1件を、: で商品ID・単価・数量に分ける
             String[] f = text.split(":");
+            // 明細は、商品ID・単価・数量の3項目のはず
             if (f.length != 3) {
+                // 形式の誤りを、検証エラーとして投げる
                 throw new OrderValidationException("形式が不正です");
             }
+            // 例外が起こりうる処理を、ここから試す
             try {
+                // 商品ID・単価・数量から明細を作り、一覧に加える
                 lines.add(new OrderLine(f[0], Integer.parseInt(f[1]), Integer.parseInt(f[2])));
+            // 数値に直せなかったとき
             } catch (NumberFormatException e) {
+                // 形式の誤りを、検証エラーとして投げる
                 throw new OrderValidationException("形式が不正です");
             }
         }

@@ -18,6 +18,7 @@ public class OrderQueryHandler {
      * @return 注文の概要。なければ OrderValidationException("注文が見つかりません: 注文ID")
      */
     public OrderSummary show(String orderId) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第11章の課題です");
     }
 
@@ -26,6 +27,7 @@ public class OrderQueryHandler {
      * @return 顧客の注文IDの一覧
      */
     public List<String> history(String customerId) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第11章の課題です");
     }
 }

@@ -19,6 +19,7 @@ class LongMethodOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // LongMethodOrderProcessor を、テスト対象として返す
         return new LongMethodOrderProcessor(stock, out);
     }
 }

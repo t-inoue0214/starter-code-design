@@ -10,13 +10,16 @@ import com.example.orders.contract.SourceRules;
  * 課題を終えるまでは失敗します（それが課題のゴールです）。
  */
 class CqrsStructureTest {
+    // ROOTを持つフィールド
     private static final String ROOT = "ch11_cqrs/exercise/";
 
     /** 更新側（command）と参照側（query）のパッケージがある。 */
     @Test
     @DisplayName("更新側（command）と参照側（query）のパッケージがある")
     void packagesExist() {
+        // command パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "command");
+        // query パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "query");
     }
 
@@ -24,6 +27,7 @@ class CqrsStructureTest {
     @Test
     @DisplayName("更新側は、参照側を知らない")
     void commandDoesNotKnowQuery() {
+        // ★重要★ command が「.exercise.query.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "command", ".exercise.query.");
     }
 
@@ -31,6 +35,7 @@ class CqrsStructureTest {
     @Test
     @DisplayName("参照側は、更新側を知らない")
     void queryDoesNotKnowCommand() {
+        // ★重要★ query が「.exercise.command.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "query", ".exercise.command.");
     }
 

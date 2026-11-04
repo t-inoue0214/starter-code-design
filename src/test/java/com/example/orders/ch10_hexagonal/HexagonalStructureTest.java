@@ -15,15 +15,20 @@ import com.example.orders.contract.SourceRules;
  * </pre>
  */
 class HexagonalStructureTest {
+    // ROOTを持つフィールド
     private static final String ROOT = "ch10_hexagonal/exercise/";
+    // CORE_DIRSを持つフィールド
     private static final String[] CORE_DIRS = { "core", "core/port/inbound", "core/port/outbound" };
 
     /** 中心（core）とアダプタ（入口・出口）のパッケージがある。 */
     @Test
     @DisplayName("中心（core）とアダプタ（入口・出口）のパッケージがある")
     void packagesExist() {
+        // core パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "core");
+        // adapter/inbound パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "adapter/inbound");
+        // adapter/outbound パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "adapter/outbound");
     }
 
@@ -33,6 +38,7 @@ class HexagonalStructureTest {
     void coreDoesNotKnowAdapters() {
         // ★重要★ 依存は、外（アダプタ）から中心へ向かう。中心がアダプタを import していれば、向きが逆になっている
         for (String dir : CORE_DIRS) {
+            // ★重要★ 中心のパッケージ が「.exercise.adapter.」を import していないことを確かめる（依存の向きの検査）
             SourceRules.assertExistsAndNoImport(ROOT + dir, ".exercise.adapter.");
         }
     }
@@ -43,6 +49,7 @@ class HexagonalStructureTest {
     void coreHasNoIo() {
         // ★重要★ 入出力（java.io）は外の世界の事情なので、中心には置かない
         for (String dir : CORE_DIRS) {
+            // ★重要★ 中心のパッケージ が「java.io.」を import していないことを確かめる（依存の向きの検査）
             SourceRules.assertExistsAndNoImport(ROOT + dir, "java.io.");
         }
     }

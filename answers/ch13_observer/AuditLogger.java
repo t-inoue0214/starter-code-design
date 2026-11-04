@@ -8,12 +8,14 @@ import java.io.PrintStream;
  * 注文成立を監査ログに残します。
  */
 public class AuditLogger implements OrderPlacedListener {
+    // 出力先を持つフィールド
     private final PrintStream out;
 
     /**
      * @param out 出力先
      */
     public AuditLogger(PrintStream out) {
+        // 引数の出力先を、フィールドに保存する
         this.out = out;
     }
 

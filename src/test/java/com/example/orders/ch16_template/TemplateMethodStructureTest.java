@@ -24,6 +24,7 @@ class TemplateMethodStructureTest {
     void templateMethodIsFinalInAbstractClass() throws NoSuchMethodException {
         // ★重要★ 手順を固定するため、process は final にして、子クラスが上書きできないようにする
         Method m = AbstractOrderProcessor.class.getDeclaredMethod("process", Order.class);
+        // 条件が成り立つことを確かめる
         assertTrue(Modifier.isFinal(m.getModifiers()));
     }
 
@@ -31,7 +32,9 @@ class TemplateMethodStructureTest {
     @Test
     @DisplayName("WebとStoreは抽象クラスを継承している")
     void subclassesExtendAbstractClass() {
+        // 条件が成り立つことを確かめる
         assertTrue(AbstractOrderProcessor.class.isAssignableFrom(WebOrderProcessor.class));
+        // 条件が成り立つことを確かめる
         assertTrue(AbstractOrderProcessor.class.isAssignableFrom(StoreOrderProcessor.class));
     }
 
@@ -42,8 +45,10 @@ class TemplateMethodStructureTest {
         // ★重要★ 子クラスに process が残っていれば、コピーが残っている証拠になる
         assertThrows(NoSuchMethodException.class,
                 () -> WebOrderProcessor.class.getDeclaredMethod("process", Order.class));
+        // 例外が投げられることを確かめる
         assertThrows(NoSuchMethodException.class,
                 () -> StoreOrderProcessor.class.getDeclaredMethod("process", Order.class));
+        // 条件が成り立たないことを確かめる
         assertFalse(Modifier.isAbstract(WebOrderProcessor.class.getModifiers()));
     }
 }

@@ -12,6 +12,7 @@ import java.util.Map;
  * 第6章の解答例です。Model・View・Controller を組み立てる役だけが残っています。
  */
 public class ExerciseOrderApp implements OrderApp {
+    // 入口の担当を持つフィールド
     private final OrderApp controller;
 
     /**
@@ -20,6 +21,7 @@ public class ExerciseOrderApp implements OrderApp {
      * @param today 今日の日付
      */
     public ExerciseOrderApp(Map<String, Integer> stock, PrintStream out, LocalDate today) {
+        // ★重要★ Controller に、Model と View を渡して組み立てる（Model と View は互いを知らない）
         this.controller = new OrderController(new OrderModel(stock), new OrderView(out), today);
     }
 
@@ -31,6 +33,7 @@ public class ExerciseOrderApp implements OrderApp {
      */
     @Override
     public String handle(String commandLine) {
+        // 入口のクラスに処理を任せ、その応答を返す
         return controller.handle(commandLine);
     }
 }

@@ -17,8 +17,10 @@ public class SeasonalDiscount implements DiscountStrategy {
     public int discountFor(Order order, int subtotal) {
         // 12月だけ割引する
         if (order.orderedOn().getMonthValue() == 12) {
+            // 小計の3%を返す
             return subtotal * 3 / 100;
         }
+        // 割引なしとして、0 を返す
         return 0;
     }
 }

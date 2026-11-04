@@ -19,6 +19,7 @@ class LoggingInlineOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // LoggingInlineOrderProcessor を、テスト対象として返す
         return new LoggingInlineOrderProcessor(stock, out);
     }
 }

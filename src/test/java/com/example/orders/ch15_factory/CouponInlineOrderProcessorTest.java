@@ -19,6 +19,7 @@ class CouponInlineOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // CouponInlineOrderProcessor を、テスト対象として返す
         return new CouponInlineOrderProcessor(stock, out);
     }
 }

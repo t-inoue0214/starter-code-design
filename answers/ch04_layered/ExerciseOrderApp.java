@@ -14,6 +14,7 @@ import java.util.Map;
  * 第4章の解答例です。部品を組み立てる役（コンポジションルート）だけが残っています。
  */
 public class ExerciseOrderApp implements OrderApp {
+    // 入口の担当を持つフィールド
     private final OrderApp controller;
 
     /**
@@ -26,8 +27,11 @@ public class ExerciseOrderApp implements OrderApp {
     public ExerciseOrderApp(Map<String, Integer> stock, PrintStream out, LocalDate today) {
         // ★重要★ 下の層から順に作り、上の層に渡す
         StockRepository stocks = new StockRepository(stock);
+        // 注文の保存先を作る
         OrderRepository orders = new OrderRepository();
+        // ★重要★ 業務層に、永続化層の部品と通知を渡して組み立てる
         OrderService service = new OrderService(stocks, orders, new OrderNotifier(out));
+        // ★重要★ 表示層には、業務層だけを渡す（表示層は永続化層を直接知らない）
         this.controller = new OrderCommandController(service, today);
     }
 
@@ -39,6 +43,7 @@ public class ExerciseOrderApp implements OrderApp {
      */
     @Override
     public String handle(String commandLine) {
+        // 入口のクラスに処理を任せ、その応答を返す
         return controller.handle(commandLine);
     }
 }

@@ -18,12 +18,17 @@ public class MemberRankDiscount implements DiscountStrategy {
     public int discountFor(Order order, int subtotal) {
         // ランクに応じた割引率を決める
         MemberRank rank = order.customer().rank();
+        // ゴールド会員なら
         if (rank == MemberRank.GOLD) {
+            // 小計の10%を返す
             return subtotal * 10 / 100;
         }
+        // シルバー会員なら
         if (rank == MemberRank.SILVER) {
+            // 小計の5%を返す
             return subtotal * 5 / 100;
         }
+        // 割引なしとして、0 を返す
         return 0;
     }
 }

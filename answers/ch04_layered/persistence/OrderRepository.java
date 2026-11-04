@@ -10,7 +10,9 @@ import java.util.Map;
  * 注文の保存先です（永続化層）。メモリ上のMapに保存します。
  */
 public class OrderRepository {
+    // 保存された注文の表を持つフィールド
     private final Map<String, OrderRecord> records = new HashMap<>();
+    // 顧客ごとの注文ID一覧を持つフィールド
     private final Map<String, List<String>> idsByCustomer = new HashMap<>();
 
     /**
@@ -18,6 +20,7 @@ public class OrderRepository {
      * @return 保存済みなら true
      */
     public boolean exists(String orderId) {
+        // その注文IDが保存済みかどうかを返す
         return records.containsKey(orderId);
     }
 
@@ -28,7 +31,9 @@ public class OrderRepository {
      * @param total 請求額（円）
      */
     public void save(Order order, int total) {
+        // 注文から顧客IDを取り出す
         String customerId = order.customer().id();
+        // 注文の記録を作り、注文IDに対応づけて保存する
         records.put(order.id(), new OrderRecord(order.id(), customerId, total));
         // 顧客ごとの一覧がなければ作り、末尾に追加する（古い順を保つ）
         idsByCustomer.computeIfAbsent(customerId, k -> new ArrayList<>()).add(order.id());
@@ -39,6 +44,7 @@ public class OrderRepository {
      * @return 記録。なければ null
      */
     public OrderRecord find(String orderId) {
+        // 注文IDに対応する記録を返す（なければ null）
         return records.get(orderId);
     }
 

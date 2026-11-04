@@ -19,6 +19,7 @@ class WebOrderProcessorBeforeTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // ウェブ向けの処理を、テスト対象として返す
         return new WebOrderProcessor(stock, out);
     }
 }

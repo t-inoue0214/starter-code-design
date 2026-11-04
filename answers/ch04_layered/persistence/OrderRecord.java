@@ -5,8 +5,11 @@ package com.example.orders.ch04_layered.exercise.persistence;
  * 保存された注文1件分の記録です（永続化層の型）。
  */
 public class OrderRecord {
+    // 注文IDを持つフィールド
     private final String orderId;
+    // 顧客IDを持つフィールド
     private final String customerId;
+    // 請求額（円）を持つフィールド
     private final int total;
 
     /**
@@ -15,12 +18,18 @@ public class OrderRecord {
      * @param total      請求額（円）
      */
     public OrderRecord(String orderId, String customerId, int total) {
+        // 引数の注文IDを、フィールドに保存する
         this.orderId = orderId;
+        // 引数の顧客IDを、フィールドに保存する
         this.customerId = customerId;
+        // 引数の請求額（円）を、フィールドに保存する
         this.total = total;
     }
 
+    // 注文IDを返す
     public String orderId() { return orderId; }
+    // 顧客IDを返す
     public String customerId() { return customerId; }
+    // 請求額（円）を返す
     public int total() { return total; }
 }

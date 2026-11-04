@@ -14,14 +14,18 @@ import org.junit.jupiter.api.Test;
  * </pre>
  */
 class MvcStructureTest {
+    // ROOTを持つフィールド
     private static final String ROOT = "ch06_mvc/exercise/";
 
     /** model・view・controller の3つのパッケージがある。 */
     @Test
     @DisplayName("model・view・controller の3つのパッケージがある")
     void threePackagesExist() {
+        // model パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "model");
+        // view パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "view");
+        // controller パッケージに、クラスがあることを確かめる
         SourceRules.assertPackageExists(ROOT + "controller");
     }
 
@@ -29,7 +33,9 @@ class MvcStructureTest {
     @Test
     @DisplayName("Model は、View も Controller も知らない")
     void modelKnowsNeitherViewNorController() {
+        // ★重要★ model が「.exercise.view.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "model", ".exercise.view.");
+        // ★重要★ model が「.exercise.controller.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "model", ".exercise.controller.");
     }
 
@@ -37,6 +43,7 @@ class MvcStructureTest {
     @Test
     @DisplayName("Model は、画面への出力（java.io）を知らない")
     void modelHasNoOutput() {
+        // ★重要★ model が「java.io.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "model", "java.io.");
     }
 
@@ -44,6 +51,7 @@ class MvcStructureTest {
     @Test
     @DisplayName("View は、Controller を知らない")
     void viewDoesNotKnowController() {
+        // ★重要★ view が「.exercise.controller.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "view", ".exercise.controller.");
     }
 
@@ -51,6 +59,7 @@ class MvcStructureTest {
     @Test
     @DisplayName("Controller は、画面への出力（java.io）を直接扱わない（出力は View に任せる）")
     void controllerExists() {
+        // ★重要★ controller が「java.io.」を import していないことを確かめる（依存の向きの検査）
         SourceRules.assertExistsAndNoImport(ROOT + "controller", "java.io.");
     }
 }

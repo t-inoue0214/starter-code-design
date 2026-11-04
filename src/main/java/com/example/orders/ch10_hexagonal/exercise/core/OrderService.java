@@ -31,6 +31,7 @@ public class OrderService implements OrderUseCase {
      */
     @Override
     public OrderResult place(Order order) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第10章の課題です");
     }
 
@@ -42,6 +43,7 @@ public class OrderService implements OrderUseCase {
      */
     @Override
     public PlacedOrder find(String orderId) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第10章の課題です");
     }
 
@@ -53,6 +55,7 @@ public class OrderService implements OrderUseCase {
      */
     @Override
     public List<String> history(String customerId) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第10章の課題です");
     }
 }

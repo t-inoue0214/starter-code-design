@@ -21,6 +21,7 @@ class ExerciseOrderAppTest extends OrderAppContractTest {
      */
     @Override
     protected OrderApp create(Map<String, Integer> stock, PrintStream out, LocalDate today) {
+        // 課題の実装を、テスト対象として返す
         return new ExerciseOrderApp(stock, out, today);
     }
 }

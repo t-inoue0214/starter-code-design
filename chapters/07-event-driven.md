@@ -10,7 +10,7 @@
 
 注文が成立した後に反映したい先（読み取りモデル、売上集計、通知）は、次々に増えます。そのたびに、組み立て役を書き換えることになると、変更が一か所に集中します。
 
-SaaSでは、この種の「Aが起きたら、B、C、Dを実行したい」という要望が次々に出ます。しかも、それぞれの担当は別のチームであることが多くあります。1つの処理が全員の事情を知っている構造では、チームの数だけ衝突が起きます。
+SaaSやSI案件では、この種の「Aが起きたら、B、C、Dを実行したい」という要望が次々に出ます。しかも、それぞれの担当は別のチームであることが多くあります。1つの処理が全員の事情を知っている構造では、チームの数だけ衝突が起きます。
 
 ## 前提
 
@@ -90,6 +90,39 @@ flowchart LR
 - 順序: イベントが届く順番は、保証されるか
 - 重複: 同じイベントが2回届いても、問題ないか（冪等性）
 - 失敗: 受け取り手が失敗したとき、再送するか
+
+この章の同期のバスでは、出す側に戻ったとき、全員の処理が終わっています。
+
+```mermaid
+sequenceDiagram
+    participant H as 出す側
+    participant B as バス
+    participant N as 通知
+    participant R as 参照データ
+    H->>B: publish(event)
+    B->>N: on(event)
+    N-->>B: 完了
+    B->>R: on(event)
+    R-->>B: 完了
+    B-->>H: 戻る（全員の処理が終わっている）
+```
+
+非同期にすると、出す側はすぐに戻ります。受け取り手の処理は、あとから別々に進みます。
+
+```mermaid
+sequenceDiagram
+    participant H as 出す側
+    participant Q as メッセージ基盤
+    participant N as 通知
+    participant R as 参照データ
+    H->>Q: publish(event)
+    Q-->>H: すぐに戻る
+    Note over H,R: この時点で参照しても、反映前かもしれない
+    Q->>N: event（届く順序は保証されるか）
+    Q->>R: event（同じイベントが2回届いても問題ないか）
+    R--xQ: 失敗
+    Q->>R: event を再送するか
+```
 
 ### 適用すると嬉しい状況・損をする状況
 
@@ -177,6 +210,30 @@ mvn test
 | `order` | `PlaceOrderHandler`（出す側） |
 | `subscriber` | `NotificationSubscriber`、`ReadModelSubscriber`（受け取る側） |
 | `query` | 注文の参照側。用意された完成品と同じ |
+
+### PLACE の流れ（シーケンス図）
+
+出す側（`PlaceOrderHandler`）は、受け取り手を知りません。バスが、登録された順に受け取り手を呼びます。
+
+```mermaid
+sequenceDiagram
+    actor U as 利用者
+    participant A as ExerciseOrderApp
+    participant H as PlaceOrderHandler
+    participant B as EventBus
+    participant N as NotificationSubscriber
+    participant R as ReadModelSubscriber
+    U->>A: handle(PLACE コマンド)
+    A->>H: place(order)
+    H->>H: 検証、在庫の引当
+    H->>B: publish(OrderPlacedEvent)
+    B->>N: on(event)
+    N->>N: 通知を出力
+    B->>R: on(event)
+    R->>R: 参照データを更新
+    H-->>A: OrderResult
+    A-->>U: OK 注文ID total=請求額
+```
 
 ### 出す側
 

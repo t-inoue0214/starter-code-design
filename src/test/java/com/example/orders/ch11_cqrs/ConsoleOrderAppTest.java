@@ -21,6 +21,7 @@ class ConsoleOrderAppTest extends OrderAppContractTest {
      */
     @Override
     protected OrderApp create(Map<String, Integer> stock, PrintStream out, LocalDate today) {
+        // 分解前の神クラスを、テスト対象として返す
         return new ConsoleOrderApp(stock, out, today);
     }
 }

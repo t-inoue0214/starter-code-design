@@ -24,16 +24,19 @@ import org.junit.jupiter.api.Test;
  * </ul>
  */
 class TransactionScriptStructureTest {
+    // FILEを持つフィールド
     private static final String FILE = "ch03_transaction_script/exercise/ExerciseOrderProcessor.java";
 
     /** 外から呼べるメソッドは、ユースケースの process だけである。 */
     @Test
     @DisplayName("外から呼べるメソッドは、ユースケースの process だけである")
     void onlyUseCaseIsPublic() {
+        // クラスが宣言しているメソッドのうち、外から呼べるものの名前を集める
         List<String> names = Arrays.stream(ExerciseOrderProcessor.class.getDeclaredMethods())
                 .filter(m -> Modifier.isPublic(m.getModifiers()) && !m.isSynthetic())
                 .map(Method::getName)
                 .collect(Collectors.toList());
+        // 実際の値が、期待値と等しいことを確かめる
         assertEquals(List.of("process"), names);
     }
 
@@ -41,9 +44,11 @@ class TransactionScriptStructureTest {
     @Test
     @DisplayName("手順ごとに名前の付いた private メソッドが5つ以上ある")
     void stepsAreNamedMethods() {
+        // 手順ごとに切り出した private メソッドの数を数える
         long steps = Arrays.stream(ExerciseOrderProcessor.class.getDeclaredMethods())
                 .filter(m -> Modifier.isPrivate(m.getModifiers()) && !m.isSynthetic())
                 .count();
+        // 条件が成り立つことを確かめる
         assertTrue(steps >= 5, "private メソッドが " + steps + " 個です。手順ごとに切り出してください");
     }
 
@@ -51,7 +56,9 @@ class TransactionScriptStructureTest {
     @Test
     @DisplayName("process は20行以内で、手順の流れだけが読める")
     void processReadsAsOutline() {
+        // process メソッドの行数を数える（コメントと空行は数えない）
         int lines = SourceRules.methodLines(FILE, "public OrderResult process(");
+        // 条件が成り立つことを確かめる
         assertTrue(lines <= 20, "process が " + lines + " 行あります。手順の中身は private メソッドへ移してください");
     }
 }

@@ -12,16 +12,19 @@ public class Stock {
      * @param quantity  在庫数
      */
     public Stock(String productId, int quantity) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
     /** @return 商品ID */
     public String productId() {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
     /** @return 現在の在庫数 */
     public int quantity() {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -31,6 +34,7 @@ public class Stock {
      * @param amount 数量
      */
     public void reserve(int amount) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -40,6 +44,7 @@ public class Stock {
      * @param amount 数量
      */
     public void release(int amount) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 }

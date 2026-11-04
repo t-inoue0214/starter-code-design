@@ -153,6 +153,47 @@ mvn test
 <details>
 <summary>解答例の要点を見る</summary>
 
+### 依存の向き（クラス図）
+
+矢印は「使う」関係です。Controller だけが Model と View の両方を知り、Model と View は互いを知りません。
+
+```mermaid
+flowchart LR
+    subgraph CT["controller"]
+        OC["OrderController"]
+    end
+    subgraph MD["model"]
+        OM["OrderModel"]
+        RC["OrderRecord"]
+    end
+    subgraph VW["view"]
+        OV["OrderView"]
+    end
+    OC --> OM
+    OC --> OV
+    OC --> RC
+    OM --> RC
+    OV --> RC
+```
+
+### PLACE の流れ（シーケンス図）
+
+```mermaid
+sequenceDiagram
+    actor U as 利用者
+    participant C as OrderController
+    participant M as OrderModel
+    participant V as OrderView
+    U->>C: handle(PLACE コマンド)
+    C->>C: コマンドを Order に変換
+    C->>M: place(order)
+    M-->>C: OrderRecord
+    C->>V: notifyPlaced(record)
+    C->>V: ok(record)
+    V-->>C: 応答の文字列
+    C-->>U: OK 注文ID total=請求額
+```
+
 ### Controllerの仲介
 
 ```java

@@ -7,12 +7,14 @@ import java.util.Map;
  * 在庫ポートの実装（アダプタ）です。メモリ上のMapを保存先にします。
  */
 public class InMemoryStockAdapter implements StockPort {
+    // 在庫の読み書き担当を持つフィールド
     private final Map<String, Integer> stocks;
 
     /**
      * @param stocks 商品IDごとの在庫数
      */
     public InMemoryStockAdapter(Map<String, Integer> stocks) {
+        // 引数の在庫の読み書き担当を、フィールドに保存する
         this.stocks = stocks;
     }
 
@@ -24,6 +26,7 @@ public class InMemoryStockAdapter implements StockPort {
      */
     @Override
     public int available(String productId) {
+        // 商品の在庫数を返す（登録がなければ0）
         return stocks.getOrDefault(productId, 0);
     }
 
@@ -35,6 +38,7 @@ public class InMemoryStockAdapter implements StockPort {
      */
     @Override
     public void change(String productId, int delta) {
+        // 現在の在庫数に増減分を足して、保存する
         stocks.put(productId, available(productId) + delta);
     }
 }

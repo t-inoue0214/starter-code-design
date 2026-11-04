@@ -14,6 +14,7 @@ public class StoreOrderProcessor extends AbstractOrderProcessor {
      * @param out   出力先
      */
     public StoreOrderProcessor(Map<String, Integer> stock, PrintStream out) {
+        // 親クラスのコンストラクタに、在庫と出力先を渡す
         super(stock, out);
     }
 
@@ -46,6 +47,7 @@ public class StoreOrderProcessor extends AbstractOrderProcessor {
      */
     @Override
     protected String auditSuffix() {
+        // 店頭を表す印を返す
         return " channel=STORE";
     }
 }

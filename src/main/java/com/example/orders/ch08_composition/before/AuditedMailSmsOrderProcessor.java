@@ -14,6 +14,7 @@ public class AuditedMailSmsOrderProcessor extends MailSmsOrderProcessor {
      * @param out   出力先
      */
     public AuditedMailSmsOrderProcessor(Map<String, Integer> stock, PrintStream out) {
+        // 親クラスのコンストラクタに、在庫と出力先を渡す
         super(stock, out);
     }
 
@@ -25,10 +26,13 @@ public class AuditedMailSmsOrderProcessor extends MailSmsOrderProcessor {
      */
     @Override
     public OrderResult process(Order order) {
+        // 親クラスの処理（検証から決済まで）を先に実行する
         OrderResult result = super.process(order);
+        // 監査ログを出力する（注文ID、顧客ID、請求額）
         out.println("[AUDIT] order=" + order.id()
                 + " customer=" + order.customer().id()
                 + " total=" + result.total());
+        // 親の処理の結果を、そのまま返す
         return result;
     }
 }

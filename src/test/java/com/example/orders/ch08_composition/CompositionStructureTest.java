@@ -31,7 +31,9 @@ class CompositionStructureTest {
      * @return 注文
      */
     private static Order order() {
+        // 連絡先のない一般会員を作る
         Customer customer = new Customer("C1", "山田", MemberRank.REGULAR, null, null);
+        // テスト用の注文（P1を1000円で2個）を作って返す
         return new Order("O1", customer, List.of(new OrderLine("P1", 1000, 2)), null, LocalDate.of(2026, 5, 10));
     }
 
@@ -41,12 +43,18 @@ class CompositionStructureTest {
     void followUpCanBePlugged() {
         // ★重要★ ラムダ式で作った部品を、既存のクラスを変えずに差し込める。部品は、結果の請求額を記録する
         Map<String, Integer> stock = new HashMap<>();
+        // 在庫に、P1を10個登録する
         stock.put("P1", 10);
+        // 記録した請求額を入れる一覧を作る
         List<Integer> totals = new ArrayList<>();
+        // ラムダ式で「請求額を記録する」部品を作る
         OrderFollowUp recorder = (order, result) -> totals.add(result.total());
+        // ★重要★ 追加の処理を、部品としてコンストラクタに渡して組み立てる
         ExerciseOrderProcessor processor = new ExerciseOrderProcessor(stock, new PrintStream(System.out),
                 List.of(recorder));
+        // 注文を処理する
         processor.process(order());
+        // 実際の値が、期待値と等しいことを確かめる
         assertEquals(List.of(2000), totals);
     }
 
@@ -56,11 +64,17 @@ class CompositionStructureTest {
     void followUpsRunInOrder() {
         // 部品は、リストに並べた順に呼ばれる
         Map<String, Integer> stock = new HashMap<>();
+        // 在庫に、P1を10個登録する
         stock.put("P1", 10);
+        // 呼ばれた順の記録を入れる一覧を作る
         List<String> calls = new ArrayList<>();
+        // ラムダ式で「呼ばれたら first と記録する」部品を作る
         OrderFollowUp first = (order, result) -> calls.add("first");
+        // ラムダ式で「呼ばれたら second と記録する」部品を作る
         OrderFollowUp second = (order, result) -> calls.add("second");
+        // ★重要★ 2つの部品を並べた順に渡して、注文を処理する
         new ExerciseOrderProcessor(stock, new PrintStream(System.out), List.of(first, second)).process(order());
+        // 実際の値が、期待値と等しいことを確かめる
         assertEquals(List.of("first", "second"), calls);
     }
 
@@ -70,6 +84,7 @@ class CompositionStructureTest {
     void noInheritanceLeft() {
         // ★重要★ 継承（extends）の子クラスが残っていれば、検査が失敗する。使わなくなった子クラスは削除する
         SourceRules.assertPackageExists("ch08_composition/exercise");
+        // ★重要★ 継承で処理を足す子クラスが、残っていないことを確かめる
         SourceRules.assertNoTextInPackage("ch08_composition/exercise", " extends ",
                 "継承で処理を足す形をやめ、部品を持って委譲してください。使わなくなった子クラスは削除します");
     }

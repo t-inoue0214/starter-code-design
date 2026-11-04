@@ -14,16 +14,19 @@ public final class Money {
      * @return Money
      */
     public static Money of(int yen) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
     /** @return 0円 */
     public static Money zero() {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
     /** @return 金額（円） */
     public int yen() {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -32,6 +35,7 @@ public final class Money {
      * @return 合計
      */
     public Money plus(Money other) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -40,6 +44,7 @@ public final class Money {
      * @return 差
      */
     public Money minus(Money other) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -48,6 +53,7 @@ public final class Money {
      * @return 数量倍した金額
      */
     public Money times(int quantity) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -56,6 +62,7 @@ public final class Money {
      * @return 割合を掛けた金額（円未満は切り捨て）
      */
     public Money percent(int rate) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -64,6 +71,7 @@ public final class Money {
      * @return この金額のほうが大きければ true
      */
     public boolean isGreaterThan(Money other) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -72,6 +80,7 @@ public final class Money {
      * @return 小さいほうの金額
      */
     public Money min(Money other) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 }

@@ -20,6 +20,7 @@ class ExerciseOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // 標準の組み合わせ（メール・SMS・監査ログ）の処理を、テスト対象として返す
         return ExerciseOrderProcessor.standard(stock, out);
     }
 }

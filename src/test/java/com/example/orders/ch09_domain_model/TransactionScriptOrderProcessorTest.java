@@ -19,6 +19,7 @@ class TransactionScriptOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // TransactionScriptOrderProcessor を、テスト対象として返す
         return new TransactionScriptOrderProcessor(stock, out);
     }
 }

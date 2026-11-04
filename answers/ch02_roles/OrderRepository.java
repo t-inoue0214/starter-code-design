@@ -9,7 +9,9 @@ import java.util.Map;
  * 注文の読み書きを担います。メモリ上のMapに保存します。
  */
 public class OrderRepository {
+    // 注文の概要の表を持つフィールド
     private final Map<String, OrderSummaryDto> summaries = new HashMap<>();
+    // 顧客ごとの注文ID一覧を持つフィールド
     private final Map<String, List<String>> idsByCustomer = new HashMap<>();
 
     /**
@@ -17,6 +19,7 @@ public class OrderRepository {
      * @return 保存済みなら true
      */
     public boolean exists(String orderId) {
+        // その注文IDが保存済みかどうかを返す
         return summaries.containsKey(orderId);
     }
 
@@ -26,6 +29,7 @@ public class OrderRepository {
      * @param summary 保存する注文の概要
      */
     public void save(OrderSummaryDto summary) {
+        // 注文の概要を、注文IDに対応づけて保存する
         summaries.put(summary.orderId(), summary);
         // 顧客ごとの一覧がなければ作り、末尾に追加する（古い順を保つ）
         idsByCustomer.computeIfAbsent(summary.customerId(), k -> new ArrayList<>()).add(summary.orderId());
@@ -36,6 +40,7 @@ public class OrderRepository {
      * @return 注文の概要。なければ null
      */
     public OrderSummaryDto find(String orderId) {
+        // 注文IDに対応する概要を返す（なければ null）
         return summaries.get(orderId);
     }
 

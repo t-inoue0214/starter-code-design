@@ -10,6 +10,7 @@ public class OutOfStockException extends RuntimeException {
      * @param message 理由
      */
     public OutOfStockException(String message) {
+        // 親クラスのコンストラクタに、メッセージを渡す
         super(message);
     }
 }

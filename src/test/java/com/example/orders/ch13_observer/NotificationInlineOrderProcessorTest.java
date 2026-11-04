@@ -19,6 +19,7 @@ class NotificationInlineOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // NotificationInlineOrderProcessor を、テスト対象として返す
         return new NotificationInlineOrderProcessor(stock, out);
     }
 }

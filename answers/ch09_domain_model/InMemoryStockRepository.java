@@ -6,12 +6,14 @@ import java.util.Map;
  * Map を保存先にした StockRepository です。
  */
 public class InMemoryStockRepository implements StockRepository {
+    // 在庫の読み書き担当を持つフィールド
     private final Map<String, Integer> stocks;
 
     /**
      * @param stocks 商品IDごとの在庫数（このMapを直接読み書きする）
      */
     public InMemoryStockRepository(Map<String, Integer> stocks) {
+        // 引数の在庫の読み書き担当を、フィールドに保存する
         this.stocks = stocks;
     }
 
@@ -34,6 +36,7 @@ public class InMemoryStockRepository implements StockRepository {
      */
     @Override
     public void save(Stock stock) {
+        // 在庫の数を、元のMapに書き戻す
         stocks.put(stock.productId(), stock.quantity());
     }
 }

@@ -75,6 +75,35 @@ flowchart TB
 
 守るルールは1つです。**依存は上から下へ一方向にします。** 下の層は、上の層を知りません。
 
+### 「上」と「下」は何を意味するか
+
+ここでの上下は、位置の偉さや重要度ではありません。**呼び出す側が上、呼ばれる側が下** という意味です。
+
+| 観点 | 上の層 | 下の層 |
+| :--- | :--- | :--- |
+| 近いもの | 利用者(入力と画面に近い) | データ(保存先に近い) |
+| 呼び出しの関係 | 下の層を呼ぶ | 上の層を呼ばない |
+| コード上の意味 | 下の層のクラスを `import` してよい | 上の層のクラスを `import` してはいけない |
+| 変更の影響 | 下の層の変更を受ける | 上の層の変更を受けない |
+
+```mermaid
+flowchart TB
+    P["上: 表示層<br/>利用者に近い"] -->|"呼ぶ（import する）"| S["中: 業務層"]
+    S -->|"呼ぶ（import する）"| D["下: 永続化層<br/>データに近い"]
+    D -.->|"結果を返す（import はしない）"| S
+    S -.->|"結果を返す（import はしない）"| P
+```
+
+実線は「呼ぶ」関係で、`import` が必要です。点線は「結果を返す」関係です。結果を返すだけなら、下の層は上の層の型を知らなくて済みます。
+
+この言い方には、由来があります。
+
+- 積み重ねの比喩です。下に土台があり、その上に別のものが載ります。土台は、上に何が載るかを知らなくても成り立ちます
+- OS(ハードウェアの上にカーネル、その上にアプリ)やネットワーク(物理層の上に通信の層が積み重なる)でも、同じ描き方が定着しています
+- 利用者を上に、データを下に描くと、入力が上から下へ流れる図になります
+
+図を左右に描いても、意味は同じです。この教材では、図を縦に描くので、上下という言葉を使っています。ほかの位置を表す言葉は、[第0章](./00-paradigms.md)の「位置を表す言葉の読み方」にまとめています。
+
 ### 層をまたぐ型に注意する
 
 永続化層の型（`OrderRecord`）を、表示層まで返してはいけません。保存形式が変わるたびに、表示層まで影響するからです。業務層が、自分の型（`OrderSummary`）に変換して返します。
@@ -158,6 +187,53 @@ mvn test
 | 業務層 | `OrderService`, `OrderSummary`, `OrderNotifier` | 業務ルール、層をまたぐ型、通知 |
 | 永続化層 | `StockRepository`, `OrderRepository`, `OrderRecord` | 在庫と注文の読み書き |
 | ルート | `ExerciseOrderApp` | 部品の組み立て |
+
+### 依存の向き（クラス図）
+
+矢印は「使う」関係です。矢印は上から下へだけ向かい、下の層のクラスは、上の層を知りません。
+
+```mermaid
+flowchart TB
+    subgraph PRES["presentation（表示層）"]
+        CT["OrderCommandController"]
+    end
+    subgraph SERV["service（業務層）"]
+        SV["OrderService"]
+        SM["OrderSummary"]
+        NT["OrderNotifier"]
+    end
+    subgraph PERS["persistence（永続化層）"]
+        SR["StockRepository"]
+        OR["OrderRepository"]
+        RC["OrderRecord"]
+    end
+    CT --> SV
+    CT --> SM
+    SV --> SR
+    SV --> OR
+    SV --> NT
+    SV -.->|変換して返す| SM
+    OR --> RC
+```
+
+### PLACE の流れ（シーケンス図）
+
+```mermaid
+sequenceDiagram
+    actor U as 利用者
+    participant C as OrderCommandController
+    participant S as OrderService
+    participant R as Repository
+    participant N as OrderNotifier
+    U->>C: handle(PLACE コマンド)
+    C->>C: コマンドを Order に変換
+    C->>S: place(order)
+    S->>R: 重複と在庫を確認
+    S->>R: 在庫を引き当て、注文を保存
+    S->>N: orderPlaced(order, total)
+    S-->>C: OrderResult
+    C-->>U: OK 注文ID total=請求額
+```
 
 ### 組み立て役
 

@@ -10,6 +10,7 @@ public class PaymentDeclinedException extends RuntimeException {
      * @param message 理由
      */
     public PaymentDeclinedException(String message) {
+        // 親クラスのコンストラクタに、メッセージを渡す
         super(message);
     }
 }

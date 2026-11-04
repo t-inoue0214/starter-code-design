@@ -117,7 +117,7 @@ mvn test
 
 - 外から呼べるメソッドが `process` だけであること
 - 手順ごとの `private` メソッドが5つ以上あること
-- `process` が20行以内であること
+- `process` が20行以内であること（コメントと空行は数えない）
 
 ## 解答例と解説
 
@@ -141,6 +141,25 @@ public OrderResult process(Order order) {
     writeAuditLog(order, total);
     return new OrderResult(order.id(), subtotal, discount, total);
 }
+```
+
+### 呼び出しの構造
+
+`process` は手順を呼ぶだけの目次です。割引の計算だけが、さらに小さな手順に分かれています。`changeStock` は、引当と、決済拒否のときの戻しで共用されます。
+
+```mermaid
+flowchart TB
+    PR["process<br/>入口（目次）"] --> V["validate"]
+    PR --> SU["subtotalOf"]
+    PR --> DI["discountOf"]
+    PR --> RS["reserveStock"]
+    PR --> CH["charge"]
+    PR --> NC["notifyCustomer"]
+    PR --> AL["writeAuditLog"]
+    DI --> RD["rankDiscount"]
+    DI --> CD["couponDiscount"]
+    RS --> CS["changeStock"]
+    CH --> CS
 ```
 
 ### 手順の切り方

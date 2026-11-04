@@ -21,6 +21,7 @@ public class InMemoryStockRepository implements StockRepository {
      */
     @Override
     public Stock find(String productId) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 
@@ -31,6 +32,7 @@ public class InMemoryStockRepository implements StockRepository {
      */
     @Override
     public void save(Stock stock) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第9章の課題です");
     }
 }

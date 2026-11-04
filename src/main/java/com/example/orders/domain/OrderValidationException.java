@@ -10,6 +10,7 @@ public class OrderValidationException extends RuntimeException {
      * @param message 理由
      */
     public OrderValidationException(String message) {
+        // 親クラスのコンストラクタに、メッセージを渡す
         super(message);
     }
 }

@@ -9,6 +9,7 @@ import java.util.Map;
  * 第2章の解答例です。部品を組み立てる役（コンポジションルート）だけが残っています。
  */
 public class ExerciseOrderApp implements OrderApp {
+    // 入口の担当を持つフィールド
     private final OrderApp controller;
 
     /**
@@ -21,8 +22,11 @@ public class ExerciseOrderApp implements OrderApp {
     public ExerciseOrderApp(Map<String, Integer> stock, PrintStream out, LocalDate today) {
         // ★重要★ 依存される側から順に作り、使う側に渡す
         StockRepository stocks = new StockRepository(stock);
+        // 注文の保存先を作る
         OrderRepository orders = new OrderRepository();
+        // ★重要★ 業務ロジックには、基盤寄りの部品（保存先と通知）を渡して組み立てる
         OrderService service = new OrderService(stocks, orders, new ConsoleNotifier(out));
+        // ★重要★ 入口には、業務ロジックだけを渡す（入口は保存先を直接知らない）
         this.controller = new OrderController(service, today);
     }
 
@@ -34,6 +38,7 @@ public class ExerciseOrderApp implements OrderApp {
      */
     @Override
     public String handle(String commandLine) {
+        // 入口のクラスに処理を任せ、その応答を返す
         return controller.handle(commandLine);
     }
 }

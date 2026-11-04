@@ -19,6 +19,7 @@ class InheritanceOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // メール・SMS・監査ログつきの処理を、標準の処理として返す
         return new AuditedMailSmsOrderProcessor(stock, out);
     }
 }

@@ -198,6 +198,56 @@ mvn test
 | `adapter/inbound` | `ConsoleCommandAdapter` |
 | `adapter/outbound` | `InMemoryStockAdapter`、`InMemoryOrderStoreAdapter`、`ConsoleNotificationAdapter` |
 
+### 依存の向き（クラス図）
+
+矢印は「使う」関係で、点線は「実装する」関係です。アダプタの矢印は、すべて中心（ポート）へ向かいます。
+
+```mermaid
+flowchart LR
+    subgraph INB["adapter/inbound"]
+        CA["ConsoleCommandAdapter"]
+    end
+    subgraph CORE["core（中心）"]
+        UC["OrderUseCase<br/>入口のポート"]
+        SV["OrderService"]
+        SP["StockPort"]
+        OP["OrderStorePort"]
+        NP["NotificationPort"]
+    end
+    subgraph OUTB["adapter/outbound"]
+        SA["InMemoryStockAdapter"]
+        OA["InMemoryOrderStoreAdapter"]
+        NA["ConsoleNotificationAdapter"]
+    end
+    CA --> UC
+    SV -.->|実装| UC
+    SV --> SP
+    SV --> OP
+    SV --> NP
+    SA -.->|実装| SP
+    OA -.->|実装| OP
+    NA -.->|実装| NP
+```
+
+### PLACE の流れ（シーケンス図）
+
+```mermaid
+sequenceDiagram
+    actor U as 利用者
+    participant I as ConsoleCommandAdapter
+    participant S as OrderService（中心）
+    participant O as 出口のアダプタ
+    U->>I: handle(PLACE コマンド)
+    I->>I: コマンドを Order に変換
+    I->>S: place(order)（OrderUseCase 経由）
+    S->>O: StockPort と OrderStorePort で確認
+    S->>O: StockPort で在庫を引当
+    S->>O: OrderStorePort で保存
+    S->>O: NotificationPort で通知
+    S-->>I: OrderResult
+    I-->>U: OK 注文ID total=請求額
+```
+
 ### 中心（外の世界を知らない）
 
 ```java

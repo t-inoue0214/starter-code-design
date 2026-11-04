@@ -19,6 +19,7 @@ class LegacyOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // LegacyOrderProcessor を、テスト対象として返す
         return new LegacyOrderProcessor(stock, out);
     }
 }

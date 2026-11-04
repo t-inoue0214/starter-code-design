@@ -20,6 +20,7 @@ class ExerciseOrderProcessorTest extends OrderProcessorContractTest {
      */
     @Override
     protected OrderProcessor create(Map<String, Integer> stock, PrintStream out) {
+        // 課題の実装を、テスト対象として返す
         return new ExerciseOrderProcessor(stock, out);
     }
 }

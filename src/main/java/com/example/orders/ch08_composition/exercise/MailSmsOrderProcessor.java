@@ -14,6 +14,7 @@ public class MailSmsOrderProcessor extends MailOrderProcessor {
      * @param out   出力先
      */
     public MailSmsOrderProcessor(Map<String, Integer> stock, PrintStream out) {
+        // 親クラスのコンストラクタに、在庫と出力先を渡す
         super(stock, out);
     }
 
@@ -25,11 +26,15 @@ public class MailSmsOrderProcessor extends MailOrderProcessor {
      */
     @Override
     public OrderResult process(Order order) {
+        // 親クラスの処理（検証から決済まで）を先に実行する
         OrderResult result = super.process(order);
+        // 電話番号があり、請求額が1万円以上のときだけ
         if (order.customer().phone() != null && result.total() >= 10000) {
+            // SMS通知を出力する（宛先、注文ID）
             out.println("[SMS] to=" + order.customer().phone()
                     + " order=" + order.id());
         }
+        // 処理の結果を、そのまま返す
         return result;
     }
 }

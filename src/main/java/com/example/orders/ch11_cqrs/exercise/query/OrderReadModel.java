@@ -16,6 +16,7 @@ public class OrderReadModel {
      * @param total      請求額（円）
      */
     public void apply(String orderId, String customerId, int total) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第11章の課題です");
     }
 
@@ -24,6 +25,7 @@ public class OrderReadModel {
      * @return 注文の概要。なければ null
      */
     public OrderSummary summary(String orderId) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第11章の課題です");
     }
 
@@ -32,6 +34,7 @@ public class OrderReadModel {
      * @return 顧客の注文IDの一覧（古い順）
      */
     public List<String> idsOf(String customerId) {
+        // 課題で実装するまでは、未実装として例外を投げる
         throw new UnsupportedOperationException("TODO: 第11章の課題です");
     }
 }

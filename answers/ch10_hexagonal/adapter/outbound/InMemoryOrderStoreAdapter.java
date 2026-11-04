@@ -11,7 +11,9 @@ import java.util.Map;
  * 注文保存ポートの実装（アダプタ）です。メモリ上のMapに保存します。
  */
 public class InMemoryOrderStoreAdapter implements OrderStorePort {
+    // 注文の表を持つフィールド
     private final Map<String, PlacedOrder> orders = new HashMap<>();
+    // 顧客ごとの注文ID一覧を持つフィールド
     private final Map<String, List<String>> idsByCustomer = new HashMap<>();
 
     /**
@@ -22,6 +24,7 @@ public class InMemoryOrderStoreAdapter implements OrderStorePort {
      */
     @Override
     public boolean exists(String orderId) {
+        // その注文IDが、保存済みかどうかを返す
         return orders.containsKey(orderId);
     }
 
@@ -32,6 +35,7 @@ public class InMemoryOrderStoreAdapter implements OrderStorePort {
      */
     @Override
     public void save(PlacedOrder order) {
+        // 成立した注文を、注文IDに対応づけて保存する
         orders.put(order.orderId(), order);
         // 顧客ごとの一覧がなければ作り、末尾に追加する（古い順を保つ）
         idsByCustomer.computeIfAbsent(order.customerId(), k -> new ArrayList<>()).add(order.orderId());
@@ -45,6 +49,7 @@ public class InMemoryOrderStoreAdapter implements OrderStorePort {
      */
     @Override
     public PlacedOrder find(String orderId) {
+        // 注文IDに対応する注文を返す（なければ null）
         return orders.get(orderId);
     }
 

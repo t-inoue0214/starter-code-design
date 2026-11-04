@@ -10,7 +10,9 @@ import java.io.PrintStream;
  * TODO: 本体から取り除いたログ出力を、ここへ移してください。
  */
 public class LoggingOrderProcessor implements OrderProcessor {
+    // 包まれる本体を持つフィールド
     private final OrderProcessor delegate;
+    // 出力先を持つフィールド
     private final PrintStream out;
 
     /**
@@ -18,7 +20,9 @@ public class LoggingOrderProcessor implements OrderProcessor {
      * @param out      ログの出力先
      */
     public LoggingOrderProcessor(OrderProcessor delegate, PrintStream out) {
+        // 引数の包まれる本体を、フィールドに保存する
         this.delegate = delegate;
+        // 引数の出力先を、フィールドに保存する
         this.out = out;
     }
 

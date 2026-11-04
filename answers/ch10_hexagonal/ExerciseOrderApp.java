@@ -14,6 +14,7 @@ import java.util.Map;
  * 第10章の解答例です。中心とアダプタを組み立てる役（コンポジションルート）だけが残っています。
  */
 public class ExerciseOrderApp implements OrderApp {
+    // inboundを持つフィールド
     private final OrderApp inbound;
 
     /**
@@ -39,6 +40,7 @@ public class ExerciseOrderApp implements OrderApp {
      */
     @Override
     public String handle(String commandLine) {
+        // 入口のアダプタに処理を任せ、その応答を返す
         return inbound.handle(commandLine);
     }
 }

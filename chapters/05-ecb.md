@@ -144,6 +144,53 @@ mvn test
 | Control | `OrderControl`、`OrderSummary` | 注文を受け付ける手順、Boundary に返す値 |
 | Boundary | `ConsoleOrderBoundary` | コマンドの解釈、応答の文面、通知の出力 |
 
+### 依存の向き（クラス図）
+
+矢印は「使う」関係です。Boundary は Entity を直接使わず、Control が返す `OrderSummary` を受け取ります。
+
+```mermaid
+flowchart LR
+    subgraph B["boundary"]
+        BD["ConsoleOrderBoundary"]
+    end
+    subgraph C["control"]
+        CT["OrderControl"]
+        SM["OrderSummary"]
+    end
+    subgraph E["entity"]
+        ST["Stock"]
+        PO["PlacedOrder"]
+        BK["OrderBook"]
+    end
+    BD --> CT
+    BD --> SM
+    CT --> ST
+    CT --> PO
+    CT --> BK
+    CT -.->|詰め直して返す| SM
+    BK --> PO
+```
+
+### PLACE の流れ（シーケンス図）
+
+```mermaid
+sequenceDiagram
+    actor U as 利用者
+    participant B as ConsoleOrderBoundary
+    participant C as OrderControl
+    participant E as Entity（OrderBook / Stock / PlacedOrder）
+    U->>B: handle(PLACE コマンド)
+    B->>B: コマンドを Order に変換
+    B->>C: place(order)
+    C->>E: OrderBook で重複を確認
+    C->>E: Stock で在庫を確認
+    C->>E: PlacedOrder で金額を計算
+    C->>E: Stock で引当、OrderBook に登録
+    C-->>B: OrderSummary
+    B->>B: 通知を出力
+    B-->>U: OK 注文ID total=請求額
+```
+
 ### Control は流れだけを知っている
 
 ```java

@@ -17,14 +17,20 @@ public class CouponRuleFactory {
     public CouponRule create(String code) {
         // クーポンなしは「割引0」のルールとして扱い、呼び出し側の null 判定をなくす
         if (code == null) {
+            // ★重要★ クーポンなしは「割引0」のルールとして返す（呼び出し側の null 判定が要らない）
             return subtotal -> 0;
         }
+        // WELCOME500 は、500円引きのクーポン
         if (code.equals("WELCOME500")) {
+            // 500円引きのルールを作って返す
             return new FixedAmountCoupon(500);
         }
+        // SAVE10 は、小計の10%引きのクーポン
         if (code.equals("SAVE10")) {
+            // 10%引きのルールを作って返す
             return new PercentCoupon(10);
         }
+        // 登録されていないクーポンを、検証エラーとして投げる
         throw new OrderValidationException("未知のクーポンです: " + code);
     }
 }

@@ -6,7 +6,9 @@ import com.example.orders.domain.OutOfStockException;
  * 商品の在庫を表すエンティティです。「在庫が足りるか」というルールを、自分自身が持ちます。
  */
 public class Stock {
+    // 商品IDを持つフィールド
     private final String productId;
+    // 数量を持つフィールド
     private int quantity;
 
     /**
@@ -14,17 +16,21 @@ public class Stock {
      * @param quantity  在庫数
      */
     public Stock(String productId, int quantity) {
+        // 引数の商品IDを、フィールドに保存する
         this.productId = productId;
+        // 引数の数量を、フィールドに保存する
         this.quantity = quantity;
     }
 
     /** @return 商品ID */
     public String productId() {
+        // 商品IDを返す
         return productId;
     }
 
     /** @return 現在の在庫数 */
     public int quantity() {
+        // 現在の在庫数を返す
         return quantity;
     }
 
@@ -36,8 +42,10 @@ public class Stock {
     public void reserve(int amount) {
         // ★重要★ 「足りるか」のルールは、在庫自身が持つ
         if (amount > quantity) {
+            // 足りないので、在庫不足の例外を投げる
             throw new OutOfStockException("在庫が不足しています: " + productId);
         }
+        // 在庫を、指定の数だけ減らす
         quantity -= amount;
     }
 
@@ -47,6 +55,7 @@ public class Stock {
      * @param amount 数量
      */
     public void release(int amount) {
+        // 在庫を、指定の数だけ増やす
         quantity += amount;
     }
 }
