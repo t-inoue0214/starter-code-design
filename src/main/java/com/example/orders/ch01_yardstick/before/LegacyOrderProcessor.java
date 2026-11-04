@@ -31,6 +31,12 @@ public class LegacyOrderProcessor implements OrderProcessor {
         this.out = out;
     }
 
+    /**
+     * 注文を処理します。検証、金額計算、在庫引当、決済、通知、監査ログを順に行います。
+     *
+     * @param order 注文
+     * @return 金額の内訳
+     */
     @Override
     public OrderResult process(Order order) {
         // 1. 入力検証
@@ -54,12 +60,15 @@ public class LegacyOrderProcessor implements OrderProcessor {
         for (OrderLine line : order.lines()) {
             subtotal += line.unitPrice() * line.quantity();
         }
+        // 割引額。以下のルールで加算していく
         int discount = 0;
+        // 会員ランク割引: ゴールドは10%、シルバーは5%
         if (order.customer().rank() == MemberRank.GOLD) {
             discount += subtotal * 10 / 100;
         } else if (order.customer().rank() == MemberRank.SILVER) {
             discount += subtotal * 5 / 100;
         }
+        // クーポン割引: コードごとに割引の方法が違う
         String coupon = order.couponCode();
         if (coupon != null) {
             if (coupon.equals("WELCOME500")) {
@@ -70,12 +79,15 @@ public class LegacyOrderProcessor implements OrderProcessor {
                 throw new OrderValidationException("未知のクーポンです: " + coupon);
             }
         }
+        // 12月は、全員に3%の割引を足す（季節割引）
         if (order.orderedOn().getMonthValue() == 12) {
             discount += subtotal * 3 / 100;
         }
+        // 割引が小計を超えないようにする（請求額が負にならない）
         if (discount > subtotal) {
             discount = subtotal;
         }
+        // 請求額 = 小計 − 割引
         int total = subtotal - discount;
 
         // 3. 在庫引当（全明細の在庫を確認してから引き当てる）
@@ -96,6 +108,7 @@ public class LegacyOrderProcessor implements OrderProcessor {
             }
             throw new PaymentDeclinedException("決済が拒否されました: " + order.id());
         }
+        // 決済の記録を出力する（実際の決済サービスの代わり）
         out.println("[PAYMENT] order=" + order.id() + " amount=" + total);
 
         // 5. 通知
@@ -103,6 +116,7 @@ public class LegacyOrderProcessor implements OrderProcessor {
             out.println("[MAIL] to=" + order.customer().email()
                     + " order=" + order.id() + " total=" + total);
         }
+        // SMS は、電話番号があり、1万円以上の注文だけに送る
         if (order.customer().phone() != null && total >= 10000) {
             out.println("[SMS] to=" + order.customer().phone()
                     + " order=" + order.id());
@@ -113,6 +127,7 @@ public class LegacyOrderProcessor implements OrderProcessor {
                 + " customer=" + order.customer().id()
                 + " total=" + total);
 
+        // 金額の内訳を呼び出し元へ返す
         return new OrderResult(order.id(), subtotal, discount, total);
     }
 }

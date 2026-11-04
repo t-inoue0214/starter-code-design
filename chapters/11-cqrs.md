@@ -1,6 +1,8 @@
 # 第11章: CQRS（更新と参照でモデルを分ける）
 
-> この章の軸: ③アプリ全体の分け方
+> この章の軸: ①アプリ全体の分け方
+>
+> **この章は Part 2（条件が合えば使う設計）です。** 使うと嬉しい条件: 参照の要求が、更新のモデルを歪め始めたとき。Part 1 の構成で足りているなら、この章の設計は使わなくても構いません。
 
 ## この章のゴール
 
@@ -163,9 +165,9 @@ mvn test
 ### 組み立て役（更新後の反映）
 
 ```java
-// 更新側で注文を処理する
+// ★重要★ 更新側で注文を処理する
 PlacedOrder placed = commands.place(parsePlace(parts));
-// 参照側のデータを更新する（今は、ここで直接つないでいる）
+// ★重要★ 参照側のデータを更新する（今は、ここで直接つないでいる）
 readModel.apply(placed.orderId(), placed.customerId(), placed.total());
 ```
 
@@ -182,9 +184,9 @@ readModel.apply(placed.orderId(), placed.customerId(), placed.total());
 
 | 比べる相手 | 違い |
 | :--- | :--- |
-| Layered（第8章） | Layeredは役割で縦に分ける。CQRSは、同じ層の中を、更新と参照で横に分ける。組み合わせて使う |
+| Layered（第4章） | Layeredは役割で縦に分ける。CQRSは、同じ層の中を、更新と参照で横に分ける。組み合わせて使う |
 | Hexagonal（第10章） | Hexagonalは中心と外部の関係。CQRSは中心の内部の分け方。保存のポートを更新用と参照用に分けると、両者が重なる |
-| Event-Driven（第12章） | この章の「更新後の反映」を、イベントを介した疎結合に替えられる。CQRSとEvent-Drivenは、よく組み合わされる |
+| Event-Driven（第7章） | この章の「更新後の反映」を、イベントを介した疎結合に替えられる。CQRSとEvent-Drivenは、よく組み合わされる |
 
 > **💼 現場Tip**
 > 一覧画面の表示が遅いとき、更新のロジックには手を入れず、参照用のテーブルやキャッシュだけを追加する対応は、実務で頻繁に行われます。これは、CQRSの考え方を部分的に取り入れた対応です。
@@ -204,5 +206,5 @@ readModel.apply(placed.orderId(), placed.customerId(), placed.total());
 
 ---
 
-| [← 第10章: Hexagonal](./10-hexagonal.md) | [全章目次](./README.md) | [第12章: Event-Driven →](./12-event-driven.md) |
+| [← 第10章: Hexagonal](./10-hexagonal.md) | [全章目次](./README.md) | [第12章: Strategy →](./12-strategy.md) |
 | - | :-: | --: |

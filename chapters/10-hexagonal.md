@@ -1,6 +1,8 @@
 # 第10章: Hexagonal（業務ルールを中心に置き、外部を差し替え可能にする）
 
-> この章の軸: ③アプリ全体の分け方
+> この章の軸: ①アプリ全体の分け方
+>
+> **この章は Part 2（条件が合えば使う設計）です。** 使うと嬉しい条件: 外部サービスや保存先が多く、差し替えやテストがつらいとき。Part 1 の構成で足りているなら、この章の設計は使わなくても構いません。
 
 ## この章のゴール
 
@@ -8,17 +10,17 @@
 
 ## Why: なぜHexagonalを学ぶのか
 
-[第8章](./08-layered.md)の解答例には、弱点がありました。業務層が、永続化層の具体的なクラスと、`PrintStream` に直接依存していたことです。
+[第4章](./04-layered.md)の解答例には、弱点がありました。業務層が、永続化層の具体的なクラスと、`PrintStream` に直接依存していたことです。
 
 外の世界は、業務ルールよりずっと変わりやすいものです。保存先はMapからデータベースに、通知はコンソールからメールに、入力はコマンドからHTTPに替わります。そのたびに業務層まで影響を受ける構造では、安心して替えられません。
 
 ## 前提
 
-[第9章](./09-mvc.md)を読み終えていること。[第2章](./02-strategy.md)で学んだ、コンストラクタ注入（DI）の考え方を使います。
+[第4章](./04-layered.md)を読み終えていること。部品をコンストラクタで受け取る形（DI）を使います。
 
 ## 悪い実装を読む
 
-次のファイルを開いてください。第8章、第9章と同じ神クラスです。
+次のファイルを開いてください。第4章、第6章と同じ神クラスです。
 
 - [ConsoleOrderApp.java](../src/main/java/com/example/orders/ch10_hexagonal/before/ConsoleOrderApp.java)
 
@@ -88,7 +90,7 @@ LayeredとHexagonalの最大の違いは、**出口の依存の向き** です�
 
 ```mermaid
 flowchart TB
-    subgraph L["Layered（第8章）"]
+    subgraph L["Layered（第4章）"]
         direction TB
         LS["業務層"] --> LP["永続化層（具体的なクラス）"]
     end
@@ -120,7 +122,7 @@ Layeredでは、業務層が永続化層の具体的なクラスを直接使い�
 | :--- | :--- |
 | 嬉しい状況 | 外部システムが多く、替わる可能性が高い。業務ルールを外部なしでテストしたい。長く保守する |
 | 損をする状況 | 小規模で短命なアプリ。外部との接点が1つで替わらない。クラスの数が増える負担が見合わない |
-| 使わない選択肢 | Layered（第8章）。フレームワークが決めた構造に従う |
+| 使わない選択肢 | Layered（第4章）。フレームワークが決めた構造に従う |
 
 ## 課題: 分解してみよう
 
@@ -199,7 +201,7 @@ mvn test
 ### 中心（外の世界を知らない）
 
 ```java
-// 在庫の引当、保存、通知（すべてポート越し）
+// ★重要★ 在庫の引当、保存、通知（すべてポート越し）
 for (OrderLine line : order.lines()) {
     stocks.change(line.productId(), -line.quantity());
 }
@@ -211,12 +213,12 @@ notification.orderPlaced(placed);
 ### 組み立て役
 
 ```java
-// 出口のアダプタを作り、中心に渡す
+// ★重要★ 出口のアダプタを作り、中心に渡す
 OrderService core = new OrderService(
         new InMemoryStockAdapter(stock),
         new InMemoryOrderStoreAdapter(),
         new ConsoleNotificationAdapter(out));
-// 入口のアダプタに、中心を入口のポートとして渡す
+// ★重要★ 入口のアダプタに、中心を入口のポートとして渡す
 this.inbound = new ConsoleCommandAdapter(core, today);
 ```
 
@@ -233,8 +235,8 @@ this.inbound = new ConsoleCommandAdapter(core, today);
 
 | 比べる相手 | 違い |
 | :--- | :--- |
-| Layered（第8章） | Layeredは上から下に依存する。Hexagonalは、すべての依存が中心に向かう |
-| MVC（第9章） | MVCはUIの構造。Hexagonalは、UIも含めた外部すべてを、中心から見た接続口として扱う |
+| Layered（第4章） | Layeredは上から下に依存する。Hexagonalは、すべての依存が中心に向かう |
+| MVC（第6章） | MVCはUIの構造。Hexagonalは、UIも含めた外部すべてを、中心から見た接続口として扱う |
 | CQRS（第11章） | Hexagonalは、中心と外部の関係を整理する。CQRSは、中心の内側の更新と参照を分ける。組み合わせられる |
 
 > **💼 現場Tip**
@@ -255,5 +257,5 @@ this.inbound = new ConsoleCommandAdapter(core, today);
 
 ---
 
-| [← 第9章: MVC](./09-mvc.md) | [全章目次](./README.md) | [第11章: CQRS →](./11-cqrs.md) |
+| [← 第9章: ドメインモデル](./09-domain-model.md) | [全章目次](./README.md) | [第11章: CQRS →](./11-cqrs.md) |
 | - | :-: | --: |

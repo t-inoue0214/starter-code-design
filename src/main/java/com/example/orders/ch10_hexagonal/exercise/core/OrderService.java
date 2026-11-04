@@ -23,16 +23,34 @@ public class OrderService implements OrderUseCase {
     public OrderService(StockPort stocks, OrderStorePort store, NotificationPort notification) {
     }
 
+    /**
+     * 注文を受け付けます。
+     *
+     * @param order 注文
+     * @return 金額の内訳
+     */
     @Override
     public OrderResult place(Order order) {
         throw new UnsupportedOperationException("TODO: 第10章の課題です");
     }
 
+    /**
+     * 注文を取り出します。
+     *
+     * @param orderId 注文ID
+     * @return 注文
+     */
     @Override
     public PlacedOrder find(String orderId) {
         throw new UnsupportedOperationException("TODO: 第10章の課題です");
     }
 
+    /**
+     * 顧客の注文IDの一覧を返します。
+     *
+     * @param customerId 顧客ID
+     * @return 注文IDの一覧（古い順）
+     */
     @Override
     public List<String> history(String customerId) {
         throw new UnsupportedOperationException("TODO: 第10章の課題です");

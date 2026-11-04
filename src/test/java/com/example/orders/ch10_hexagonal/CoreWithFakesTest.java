@@ -1,8 +1,16 @@
 package com.example.orders.ch10_hexagonal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import com.example.orders.ch10_hexagonal.exercise.core.OrderService;
 import com.example.orders.ch10_hexagonal.exercise.core.PlacedOrder;
@@ -16,14 +24,6 @@ import com.example.orders.domain.OrderLine;
 import com.example.orders.domain.OrderResult;
 import com.example.orders.domain.OrderValidationException;
 import com.example.orders.domain.OutOfStockException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
 /**
  * 業務の中心を、コンソールもMapも使わず、偽物のポートだけで動かせることを確かめるテストです。
@@ -35,10 +35,11 @@ class CoreWithFakesTest {
     private final List<PlacedOrder> notified = new ArrayList<>();
     private OrderService core;
 
+    /** 各テストの前に、偽のポートで中心を組み立てます。 */
     @BeforeEach
     void setUp() {
         stockMap.put("P1", 10);
-        // 偽の出口。中心は、これが本物かどうかを知らない
+        // ★重要★ 偽の出口。中心は、これが本物かどうかを知らない
         StockPort stocks = new StockPort() {
             public int available(String productId) {
                 return stockMap.getOrDefault(productId, 0);
@@ -71,18 +72,28 @@ class CoreWithFakesTest {
                 return ids;
             }
         };
+        // 通知は、受け取った注文を記録するだけの偽物
         NotificationPort notification = notified::add;
         core = new OrderService(stocks, store, notification);
     }
 
+    /**
+     * テスト用の注文を作ります。
+     *
+     * @param id       注文ID
+     * @param quantity 数量
+     * @return 注文
+     */
     private static Order order(String id, int quantity) {
         Customer customer = new Customer("C1", "山田", MemberRank.GOLD, null, null);
         return new Order(id, customer, List.of(new OrderLine("P1", 1000, quantity)), null, LocalDate.of(2026, 5, 10));
     }
 
+    /** 偽のポートだけで注文でき、在庫・保存・通知がポート越しに行われる。 */
     @Test
     @DisplayName("偽のポートだけで注文でき、在庫・保存・通知がポート越しに行われる")
     void placeThroughPorts() {
+        // ゴールド会員の1000円 × 5個で、10%引きの4500円。在庫・保存・通知が、すべて偽のポートに届く
         OrderResult r = core.place(order("O1", 5));
         assertEquals(4500, r.total());
         assertEquals(5, stockMap.get("P1"));
@@ -91,18 +102,22 @@ class CoreWithFakesTest {
         assertEquals(4500, notified.get(0).total());
     }
 
+    /** 失敗した注文は、保存も通知もされない。 */
     @Test
     @DisplayName("失敗した注文は、保存も通知もされない")
     void failureHasNoSideEffects() {
+        // 在庫10個に11個の注文は失敗する。失敗した注文は、在庫を減らさず、保存も通知もしない
         assertThrows(OutOfStockException.class, () -> core.place(order("O1", 11)));
         assertEquals(10, stockMap.get("P1"));
         assertTrue(saved.isEmpty());
         assertTrue(notified.isEmpty());
     }
 
+    /** 参照と履歴も、ポート越しに動く。存在しない注文は検証エラー。 */
     @Test
     @DisplayName("参照と履歴も、ポート越しに動く。存在しない注文は検証エラー")
     void findAndHistory() {
+        // 注文を1件通したあとで、参照と履歴が使える。存在しない注文は検証エラー
         core.place(order("O1", 1));
         assertEquals("C1", core.find("O1").customerId());
         assertEquals(List.of("O1"), core.history("C1"));

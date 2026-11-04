@@ -19,13 +19,14 @@ import java.util.stream.Stream;
 public final class SourceRules {
     private static final String BASE = "src/main/java/com/example/orders/";
 
+    /** 道具クラスなので、インスタンスは作りません。 */
     private SourceRules() {
     }
 
     /**
      * パッケージ（ディレクトリ）の直下にある Java ファイルを集めます。
      *
-     * @param relativeDir 例: "ch08_layered/exercise/service"
+     * @param relativeDir 例: "ch04_layered/exercise/service"
      * @return Java ファイルの一覧（ディレクトリがなければ空）
      */
     public static List<Path> javaFiles(String relativeDir) {
@@ -43,7 +44,7 @@ public final class SourceRules {
     /**
      * パッケージに、Java ファイルが1つ以上あることを確かめます。
      *
-     * @param relativeDir 例: "ch08_layered/exercise/service"
+     * @param relativeDir 例: "ch04_layered/exercise/service"
      */
     public static void assertPackageExists(String relativeDir) {
         assertFalse(javaFiles(relativeDir).isEmpty(),
@@ -53,7 +54,7 @@ public final class SourceRules {
     /**
      * パッケージ内のどのファイルも、禁止された import を含まないことを確かめます。
      *
-     * @param relativeDir 検査するパッケージ（例: "ch08_layered/exercise/service"）
+     * @param relativeDir 検査するパッケージ（例: "ch04_layered/exercise/service"）
      * @param forbidden   import 文に含まれてはいけない文字列（例: ".exercise.presentation."）
      */
     public static void assertNoImport(String relativeDir, String forbidden) {
@@ -103,5 +104,78 @@ public final class SourceRules {
         assertPackageExists(relativeDir);
         assertNoImport(relativeDir, forbidden);
         assertTrue(true);
+    }
+
+    /**
+     * パッケージに、名前が指定の語尾で終わるクラス（ファイル）が1つ以上あることを確かめます。
+     *
+     * @param relativeDir 検査するパッケージ
+     * @param suffix      クラス名の語尾（例: "Controller"）
+     */
+    public static void assertClassWithSuffixExists(String relativeDir, String suffix) {
+        boolean found = javaFiles(relativeDir).stream()
+                .anyMatch(p -> p.getFileName().toString().endsWith(suffix + ".java"));
+        assertTrue(found, relativeDir + " に、名前が " + suffix + " で終わるクラスを作ってください");
+    }
+
+    /**
+     * 名前が指定の語尾で終わるクラスが、禁止された文字列を含まないことを確かめます。
+     * 役割ごとに「持ってはいけないもの」を確かめるために使います。
+     *
+     * @param relativeDir 検査するパッケージ
+     * @param suffix      クラス名の語尾（例: "Service"）
+     * @param forbidden   ファイルに含まれてはいけない文字列
+     * @param reason      禁止する理由（失敗メッセージに使う）
+     */
+    public static void assertNoTextInClasses(String relativeDir, String suffix, String forbidden, String reason) {
+        for (Path file : javaFiles(relativeDir)) {
+            if (!file.getFileName().toString().endsWith(suffix + ".java")) {
+                continue;
+            }
+            try {
+                String body = Files.readString(file);
+                assertFalse(body.contains(forbidden),
+                        file.getFileName() + " に「" + forbidden + "」があります。" + reason);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
+
+    /**
+     * パッケージ内のどのファイルも、指定の文字列を含まないことを確かめます。
+     *
+     * @param relativeDir 検査するパッケージ
+     * @param forbidden   含まれてはいけない文字列
+     * @param reason      禁止する理由
+     */
+    public static void assertNoTextInPackage(String relativeDir, String forbidden, String reason) {
+        assertNoTextInClasses(relativeDir, "", forbidden, reason);
+    }
+
+    /**
+     * メソッドの行数を数えます。宣言の行から、同じインデントの閉じ括弧の行までです。
+     *
+     * @param relativeFile ソースファイル（例: "ch03_transaction_script/exercise/ExerciseOrderProcessor.java"）
+     * @param signature    メソッド宣言の行に含まれる文字列
+     * @return メソッドの行数（宣言行と閉じ括弧を含む）
+     */
+    public static int methodLines(String relativeFile, String signature) {
+        try {
+            List<String> lines = Files.readAllLines(Path.of(BASE + relativeFile));
+            for (int i = 0; i < lines.size(); i++) {
+                if (lines.get(i).contains(signature)) {
+                    String indent = lines.get(i).substring(0, lines.get(i).indexOf(lines.get(i).trim()));
+                    for (int j = i + 1; j < lines.size(); j++) {
+                        if (lines.get(j).equals(indent + "}")) {
+                            return j - i + 1;
+                        }
+                    }
+                }
+            }
+            throw new IllegalStateException("メソッドが見つかりません: " + signature);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

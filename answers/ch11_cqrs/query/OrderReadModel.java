@@ -21,6 +21,7 @@ public class OrderReadModel {
      */
     public void apply(String orderId, String customerId, int total) {
         summaries.put(orderId, new OrderSummary(orderId, customerId, total));
+        // 顧客ごとの一覧がなければ作り、末尾に追加する（古い順を保つ）
         idsByCustomer.computeIfAbsent(customerId, k -> new ArrayList<>()).add(orderId);
     }
 
@@ -37,6 +38,7 @@ public class OrderReadModel {
      * @return 顧客の注文IDの一覧（古い順）
      */
     public List<String> idsOf(String customerId) {
+        // 呼び出し側が一覧を書き換えても、保存内容に影響しないよう、コピーして返す
         return List.copyOf(idsByCustomer.getOrDefault(customerId, List.of()));
     }
 }

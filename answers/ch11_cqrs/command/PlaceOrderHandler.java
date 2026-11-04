@@ -31,7 +31,7 @@ public class PlaceOrderHandler {
      * @return 成立した注文の結果
      */
     public PlacedOrder place(Order order) {
-        // 重複の確認（更新側が必要とする最小限の状態）
+        // ★重要★ 重複の確認（更新側が必要とする最小限の状態）
         if (placedIds.contains(order.id())) {
             throw new OrderValidationException("注文IDが重複しています: " + order.id());
         }
@@ -47,6 +47,7 @@ public class PlaceOrderHandler {
                 throw new OutOfStockException("在庫が不足しています: " + line.productId());
             }
         }
+        // 決済の上限を超える請求は、決済できない
         if (total > 500000) {
             throw new PaymentDeclinedException("決済が拒否されました: " + order.id());
         }
@@ -58,6 +59,13 @@ public class PlaceOrderHandler {
         return new PlacedOrder(order.id(), order.customer().id(), total);
     }
 
+    /**
+     * 会員ランクに応じた割引額を求めます。ゴールドは10%、シルバーは5%、それ以外は0です。
+     *
+     * @param rank     会員ランク
+     * @param subtotal 小計（円）
+     * @return 割引額（円）
+     */
     private int rankDiscount(MemberRank rank, int subtotal) {
         if (rank == MemberRank.GOLD) {
             return subtotal * 10 / 100;

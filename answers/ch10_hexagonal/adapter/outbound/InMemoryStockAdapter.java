@@ -16,11 +16,23 @@ public class InMemoryStockAdapter implements StockPort {
         this.stocks = stocks;
     }
 
+    /**
+     * 商品の在庫数を返します。
+     *
+     * @param productId 商品ID
+     * @return 在庫数（存在しなければ0）
+     */
     @Override
     public int available(String productId) {
         return stocks.getOrDefault(productId, 0);
     }
 
+    /**
+     * 商品の在庫を増減します。
+     *
+     * @param productId 商品ID
+     * @param delta 増減する数（減らすときは負）
+     */
     @Override
     public void change(String productId, int delta) {
         stocks.put(productId, available(productId) + delta);

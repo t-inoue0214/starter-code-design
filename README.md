@@ -76,10 +76,11 @@
 | Part | 内容 |
 | :--- | :--- |
 | 0. 全体像 | オブジェクト指向・AOPなどの違い、学ぶ順序と深さの目安、良い分け方を判断する物差し（凝集度・結合度、SOLID、コードの臭い） |
-| A. デザインパターン（軸①：クラスの作り方） | Strategy / Observer / Decorator / Factory / Template Method |
-| B. 業務ロジックの置き方（軸②） | トランザクションスクリプト と ドメインモデル |
-| C. アーキテクチャパターン（軸③：アプリ全体の分け方） | Layered / MVC（ECBと比較） / Hexagonal（Clean・Onionと比較） / CQRS / Event-Driven |
-| D. 比べて選ぶ | 規模・変更頻度・チーム構成から、パターンを選ぶ基準 |
+| 1. 基本の設計（最初に学ぶ） | クラスの役割分け / トランザクションスクリプト / Layered / ECB / MVC / Event-Driven / 継承よりコンポジション |
+| 2. 条件が合えば使う設計 | ドメインモデル / Hexagonal / CQRS、デザインパターン（Strategy / Observer / Decorator / Factory / Template Method） |
+| 3. 比べて選ぶ | まず Part 1 の構成で足りるかを問い、足りないときだけ Part 2 から選ぶ基準 |
+
+設計は、アプリ全体の分け方、業務ロジックの置き場所、クラスの作り方の順に決めます。教材もこの順に並べています。
 
 詳細は [chapters/README.md](./chapters/README.md) を参照してください。
 

@@ -14,11 +14,17 @@ import java.util.Map;
  * 最後は、部品を組み立てる役（コンポジションルート）だけが、このクラスに残ります。
  */
 public class ExerciseOrderApp implements OrderApp {
+    // 商品IDごとの在庫数（注文のたびに減っていく）
     private final Map<String, Integer> stock;
+    // 通知の出力先
     private final PrintStream out;
+    // 今日の日付
     private final LocalDate today;
+    // 注文IDから顧客IDを引く表
     private final Map<String, String> orderCustomer = new HashMap<>();
+    // 注文IDから請求額を引く表（注文の有無の確認にも使う）
     private final Map<String, Integer> orderTotal = new HashMap<>();
+    // 顧客IDごとの注文ID一覧（古い順）
     private final Map<String, List<String>> history = new HashMap<>();
 
     /**
@@ -34,21 +40,31 @@ public class ExerciseOrderApp implements OrderApp {
         this.today = today;
     }
 
+    /**
+     * コマンド文字列を解釈して処理し、応答の文字列を返します。
+     *
+     * @param commandLine 受け取ったコマンド文字列
+     * @return 応答の文字列（失敗したときは ERROR で始まる）
+     */
     @Override
     public String handle(String commandLine) {
         // コマンドの解釈
         String[] parts = commandLine.trim().split("\\s+");
         String command = parts[0];
+        // PLACE: 注文を受け付ける
         if (command.equals("PLACE")) {
+            // PLACE は「PLACE 注文ID 顧客ID ランク 明細」の5項目で構成される
             if (parts.length != 5) {
                 return "ERROR 形式が不正です";
             }
             String orderId = parts[1];
             String customerId = parts[2];
             String rank = parts[3];
+            // 会員ランクは3種類だけを受け付ける
             if (!rank.equals("REGULAR") && !rank.equals("SILVER") && !rank.equals("GOLD")) {
                 return "ERROR 形式が不正です";
             }
+            // 明細は「商品ID:単価:数量」を ; でつないだ形。解釈しながら小計も数える
             List<String[]> lines = new ArrayList<>();
             int subtotal = 0;
             for (String text : parts[4].split(";")) {
@@ -97,6 +113,7 @@ public class ExerciseOrderApp implements OrderApp {
             // 通知（コンソール出力）
             out.println("[NOTIFY] customer=" + customerId + " order=" + orderId + " total=" + total);
             return "OK " + orderId + " total=" + total;
+        // SHOW: 注文1件を参照する
         } else if (command.equals("SHOW")) {
             if (parts.length != 2) {
                 return "ERROR 形式が不正です";
@@ -105,16 +122,19 @@ public class ExerciseOrderApp implements OrderApp {
                 return "ERROR 注文が見つかりません: " + parts[1];
             }
             return "ORDER " + parts[1] + " customer=" + orderCustomer.get(parts[1]) + " total=" + orderTotal.get(parts[1]);
+        // HISTORY: 顧客の注文履歴を参照する
         } else if (command.equals("HISTORY")) {
             if (parts.length != 2) {
                 return "ERROR 形式が不正です";
             }
             List<String> ids = history.get(parts[1]);
+            // 注文のない顧客は、エラーではなく (none) を返す
             if (ids == null || ids.isEmpty()) {
                 return "HISTORY " + parts[1] + " (none)";
             }
             return "HISTORY " + parts[1] + " " + String.join(",", ids);
         }
+        // どのコマンドにも当てはまらなかった
         return "ERROR 不明なコマンドです: " + command;
     }
 }

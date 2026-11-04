@@ -31,10 +31,18 @@ public class ConsoleCommandAdapter implements OrderApp {
         this.today = today;
     }
 
+    /**
+     * コマンド文字列を解釈して処理し、応答の文字列を返します。
+     *
+     * @param commandLine 受け取ったコマンド文字列
+     * @return 応答の文字列（失敗したときは ERROR で始まる）
+     */
     @Override
     public String handle(String commandLine) {
+        // 空白で区切って、コマンド名と引数に分ける
         String[] parts = commandLine.trim().split("\\s+");
         try {
+            // 最初の語がコマンド名。コマンドごとの処理へ振り分ける
             switch (parts[0]) {
                 case "PLACE":
                     return place(parts);
@@ -48,29 +56,55 @@ public class ConsoleCommandAdapter implements OrderApp {
                     throw new OrderValidationException("不明なコマンドです: " + parts[0]);
             }
         } catch (OrderValidationException | OutOfStockException | PaymentDeclinedException e) {
-            // 業務上の失敗は、例外ではなく ERROR 応答として返す
+            // ★重要★ 業務上の失敗は、例外ではなく ERROR 応答として返す
             return "ERROR " + e.getMessage();
         }
     }
 
+    /**
+     * コマンドの語の数が期待どおりかを確かめます。違えば、形式の誤りとして扱います。
+     *
+     * @param parts    空白で区切ったコマンドの語
+     * @param expected 期待する語の数
+     */
     private void requireArgs(String[] parts, int expected) {
+        // 引数の数が違うコマンドは、形式の誤りとして扱う
         if (parts.length != expected) {
             throw new OrderValidationException("形式が不正です");
         }
     }
 
+    /**
+     * PLACE コマンドを処理し、応答を組み立てます。
+     *
+     * @param parts 空白で区切ったコマンドの語
+     * @return 応答の文字列
+     */
     private String place(String[] parts) {
         OrderResult result = useCase.place(parsePlace(parts));
         return "OK " + result.orderId() + " total=" + result.total();
     }
 
+    /**
+     * SHOW コマンドの応答を組み立てます。
+     *
+     * @param orderId 注文ID
+     * @return 応答の文字列
+     */
     private String show(String orderId) {
         PlacedOrder p = useCase.find(orderId);
         return "ORDER " + p.orderId() + " customer=" + p.customerId() + " total=" + p.total();
     }
 
+    /**
+     * HISTORY コマンドの応答を組み立てます。
+     *
+     * @param customerId 顧客ID
+     * @return 応答の文字列
+     */
     private String history(String customerId) {
         List<String> ids = useCase.history(customerId);
+        // 履歴が空なら (none) と表示する
         return "HISTORY " + customerId + " " + (ids.isEmpty() ? "(none)" : String.join(",", ids));
     }
 
@@ -100,7 +134,9 @@ public class ConsoleCommandAdapter implements OrderApp {
                 throw new OrderValidationException("形式が不正です");
             }
         }
+        // コマンドには顧客名も連絡先もないので、顧客IDを名前の代わりにし、連絡先は空にする
         Customer customer = new Customer(parts[2], parts[2], rank, null, null);
+        // クーポンなしの注文として組み立てる。日付は、アプリが持つ今日の日付を使う
         return new Order(parts[1], customer, lines, null, today);
     }
 }

@@ -17,6 +17,11 @@ public class ConsoleNotificationAdapter implements NotificationPort {
         this.out = out;
     }
 
+    /**
+     * 注文の成立を知らせます。
+     *
+     * @param order 注文
+     */
     @Override
     public void orderPlaced(PlacedOrder order) {
         out.println("[NOTIFY] customer=" + order.customerId() + " order=" + order.orderId() + " total=" + order.total());
