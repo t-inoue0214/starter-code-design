@@ -434,5 +434,5 @@ mvn test -Dtest=ClassKindsTest
 
 ---
 
-| [← 第16章: Template Method](./16-template-method.md) | [全章目次](./README.md) | [第18章: パターンを選ぶ基準 →](./18-choosing.md) |
+| [← 第16章: Template Method](./16-template-method.md) | [全章目次](./README.md) | [第18章: 業務ロジックを担うクラスの種類 →](./18-business-classes.md) |
 | - | :-: | --: |
