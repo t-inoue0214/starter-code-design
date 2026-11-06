@@ -243,5 +243,5 @@ public class StoreOrderProcessor extends AbstractOrderProcessor {
 
 ---
 
-| [← 第15章: Factory](./15-factory.md) | [全章目次](./README.md) | [第17章: パターンを選ぶ基準 →](./17-choosing.md) |
+| [← 第15章: Factory](./15-factory.md) | [全章目次](./README.md) | [第17章: クラスの種類 →](./17-class-kinds.md) |
 | - | :-: | --: |

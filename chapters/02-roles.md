@@ -204,6 +204,10 @@ this.controller = new OrderController(service, today);
 
 </details>
 
+## DTO 以外の「クラスの種類」
+
+DTO は、役割とは別の軸で呼ばれる「クラスの種類」の1つです。Value Object、Entity、Enum、イベント、Result、Config、バリデータなども、同じ仲間です。これらの違いは、[第17章](./17-class-kinds.md)で実装例とともに学びます。
+
 ## 他のパターンと比べる
 
 この章は、役割に仕分ける最初の一歩です。次章以降で、仕分けた役割をどう並べるかを学びます。
