@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 /**
  * ソースコードの import を読んで、パッケージ間の依存の向きを検査する小さな道具です。
- * アーキテクチャパターンの章で、「層やモジュールの分け方が守られているか」を確かめるために使います。
+ * コードアーキテクチャの章で、「層やモジュールの分け方が守られているか」を確かめるために使います。
  * 外部ライブラリは使わず、ファイルを読むだけで検査します。
  */
 public final class SourceRules {
@@ -27,7 +27,7 @@ public final class SourceRules {
     /**
      * パッケージ（ディレクトリ）の直下にある Java ファイルを集めます。
      *
-     * @param relativeDir 例: "ch04_layered/exercise/service"
+     * @param relativeDir 例: "ch05_layered/exercise/service"
      * @return Java ファイルの一覧（ディレクトリがなければ空）
      */
     public static List<Path> javaFiles(String relativeDir) {
@@ -52,7 +52,7 @@ public final class SourceRules {
     /**
      * パッケージに、Java ファイルが1つ以上あることを確かめます。
      *
-     * @param relativeDir 例: "ch04_layered/exercise/service"
+     * @param relativeDir 例: "ch05_layered/exercise/service"
      */
     public static void assertPackageExists(String relativeDir) {
         // 条件が成り立たないことを確かめる
@@ -63,7 +63,7 @@ public final class SourceRules {
     /**
      * パッケージ内のどのファイルも、禁止された import を含まないことを確かめます。
      *
-     * @param relativeDir 検査するパッケージ（例: "ch04_layered/exercise/service"）
+     * @param relativeDir 検査するパッケージ（例: "ch05_layered/exercise/service"）
      * @param forbidden   import 文に含まれてはいけない文字列（例: ".exercise.presentation."）
      */
     public static void assertNoImport(String relativeDir, String forbidden) {

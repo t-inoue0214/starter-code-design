@@ -1,0 +1,39 @@
+package com.example.orders.ch07_mvc.exercise;
+
+import com.example.orders.ch07_mvc.exercise.controller.OrderController;
+import com.example.orders.ch07_mvc.exercise.model.OrderModel;
+import com.example.orders.ch07_mvc.exercise.view.OrderView;
+import com.example.orders.domain.OrderApp;
+import java.io.PrintStream;
+import java.time.LocalDate;
+import java.util.Map;
+
+/**
+ * 第7章の解答例です。Model・View・Controller を組み立てる役だけが残っています。
+ */
+public class ExerciseOrderApp implements OrderApp {
+    // 入口の担当を持つフィールド
+    private final OrderApp controller;
+
+    /**
+     * @param stock 商品IDごとの在庫数
+     * @param out   通知の出力先
+     * @param today 今日の日付
+     */
+    public ExerciseOrderApp(Map<String, Integer> stock, PrintStream out, LocalDate today) {
+        // ★重要★ Controller に、Model と View を渡して組み立てる（Model と View は互いを知らない）
+        this.controller = new OrderController(new OrderModel(stock), new OrderView(out), today);
+    }
+
+    /**
+     * コマンド文字列を解釈して処理し、応答の文字列を返します。
+     *
+     * @param commandLine 受け取ったコマンド文字列
+     * @return 応答の文字列（失敗したときは ERROR で始まる）
+     */
+    @Override
+    public String handle(String commandLine) {
+        // 入口のクラスに処理を任せ、その応答を返す
+        return controller.handle(commandLine);
+    }
+}

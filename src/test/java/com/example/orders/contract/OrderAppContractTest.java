@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * 注文アプリ（コマンドを受けて応答を返す）の「振る舞いの契約」を確かめる共通テストです。
- * 第4〜7章と第10・11章のテストはこのクラスを継承し、{@link #create} だけを実装します。
+ * 第5〜8章と第10・11章のテストはこのクラスを継承し、{@link #create} だけを実装します。
  * 構造を変えても、このテストを書き換えないことが、リファクタリングの正しさの証明になります。
  */
 public abstract class OrderAppContractTest {
