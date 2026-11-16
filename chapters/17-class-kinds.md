@@ -130,7 +130,7 @@ public boolean equals(Object o) {
 }
 ```
 
-`Taro@Example.com` と ` taro@example.com ` は、正規化されて等しくなります。コンストラクタを `private` にして、検証する `of` からだけ作らせるのが定石です。第9章の `Money` も、同じ種類です。
+`Taro@Example.com` と ` taro@example.com ` は、正規化されて等しくなります。コンストラクタを `private` にして、検証する `of` からだけ作らせるのが定石です。第9章の `Money` も、同じ種類です。Value Object を確実にイミュータブルにする技法は、[第19章](./19-immutability.md)で詳しく扱います。
 
 ### 3. Entity（エンティティ）
 

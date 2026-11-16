@@ -390,5 +390,5 @@ mvn test -Dtest=BusinessClassesTest
 
 ---
 
-| [← 第17章: クラスの種類](./17-class-kinds.md) | [全章目次](./README.md) | [第19章: パターンを選ぶ基準 →](./19-choosing.md) |
+| [← 第17章: クラスの種類](./17-class-kinds.md) | [全章目次](./README.md) | [第19章: 変わらないオブジェクトで設計する →](./19-immutability.md) |
 | - | :-: | --: |
