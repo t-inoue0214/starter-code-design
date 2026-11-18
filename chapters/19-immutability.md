@@ -367,5 +367,5 @@ mvn test -Dtest=ImmutabilityTest
 
 ---
 
-| [← 第18章: 業務ロジックを担うクラスの種類](./18-business-classes.md) | [全章目次](./README.md) | [第20章: パターンを選ぶ基準 →](./20-choosing.md) |
+| [← 第18章: 業務ロジックを担うクラスの種類](./18-business-classes.md) | [全章目次](./README.md) | [第20章: 見せる範囲を決める →](./20-visibility.md) |
 | - | :-: | --: |
